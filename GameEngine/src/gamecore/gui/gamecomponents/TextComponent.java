@@ -28,6 +28,7 @@ public class TextComponent extends AffineComponent implements IDrawable
 		Font = new Font("Courier",Font.PLAIN,18);
 		Color = Color.BLACK;
 		
+		Display = true;
 		return;
 	}
 	
@@ -47,6 +48,7 @@ public class TextComponent extends AffineComponent implements IDrawable
 		Font = font;
 		Color = c;
 		
+		Display = true;
 		return;
 	}
 	
@@ -79,7 +81,7 @@ public class TextComponent extends AffineComponent implements IDrawable
 	
 	@Override public void paint(Graphics g)
 	{
-		if(Text != null)
+		if(Display && Text != null)
 		{
 			Graphics2D g2 = (Graphics2D)g;
 			
@@ -91,6 +93,24 @@ public class TextComponent extends AffineComponent implements IDrawable
 		}
 		
 		super.paint(g);
+		return;
+	}
+	
+	/**
+	 * Hides the text.
+	 */
+	public void Hide()
+	{
+		Display = false;
+		return;
+	}
+	
+	/**
+	 * Shows the text.
+	 */
+	public void Show()
+	{
+		Display = true;
 		return;
 	}
 	
@@ -168,6 +188,11 @@ public class TextComponent extends AffineComponent implements IDrawable
 	 * The color to draw the text.
 	 */
 	protected Color Color;
+	
+	/**
+	 * If true, we should display the text.
+	 */
+	protected boolean Display;
 	
 	/**
 	 * If true, this component is initialized.
