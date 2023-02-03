@@ -15,7 +15,7 @@ public class TextComponent extends AffineComponent implements IDrawable
 {
 	/**
 	 * Creates a new text component.
-	 * It draws with plain black TimesRoman font at size 18. 
+	 * It draws with plain black Courier font at size 18. 
 	 * @param text The string to draw.
 	 * @throws NullPointerException Thrown if {@code text} is null.
 	 */
@@ -25,7 +25,7 @@ public class TextComponent extends AffineComponent implements IDrawable
 			throw new NullPointerException();
 		
 		Text = text;
-		Font = new Font("TimesRoman",Font.PLAIN,18);
+		Font = new Font("Courier",Font.PLAIN,18);
 		Color = Color.BLACK;
 		
 		return;

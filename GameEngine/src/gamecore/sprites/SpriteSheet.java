@@ -49,7 +49,7 @@ public class SpriteSheet
 	 * 		The second is the y axis tiling dimension.
 	 * 		Both values must be at least 1.
 	 * 		<br><br>
-	 * 		If the time dimensions are variable, then the following appear with each entry occurring on its own line..
+	 * 		If the time dimensions are variable, then the following appear with each entry occurring on its own line.
 	 * 		<ul>
 	 * 			<li>An integer specifying the number of sprites.</li>
 	 * 			<li>
