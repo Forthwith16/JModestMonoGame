@@ -73,8 +73,8 @@ public class InputManager implements IUpdatable
 	/**
 	 * Registers an input formula under the given name with the given expression.
 	 * @param input The input name.
-	 * @param func The expression to evaluate to check if it's satisfied (ORed with any others). Null will not be added but will create an input if the given one doesn't exist yet.
-	 * @return Returns true if the input could be added, that is if it's not a duplicate under the same name.
+	 * @param func The expression to evaluate to check if it's satisfied (ORed with any others attached to the name {@code input}). Null will not be added but will create an input if the given one doesn't exist yet.
+	 * @return Returns true if the input could be added, that is if {@code func} is not a duplicate {@code InputFunction} under the same name.
 	 */
 	public boolean AddInput(String input, InputFunction func)
 	{
@@ -102,6 +102,72 @@ public class InputManager implements IUpdatable
 			return false;
 		
 		t.Formula.AddLast(func);
+		return true;
+	}
+	
+	/**
+	 * Registers an input formula under the given name with the given expression.
+	 * This version wraps additional logic around it so that the input is satisfied once when {@code func} is first satisfied and then is unsatisfied until {@code func} is no long satisfied and then satisfied again.
+	 * If {@code satisfied} is false, then this logic is inverted so that {@code func} must be unsatisfied to make this input satisfied once and then {@code func} must be satisfied and then unsatisfied before this input is satisfied again. 
+	 * @param input The input name.
+	 * @param func The expression to evaluate to check if it's satisfied (ORed with any others attached to the name {@code input}). Null will not be added but will create an input if the given one doesn't exist yet.
+	 * @param satisfied If true, then this input is satisfied only when {@code func} is first satisfied. If false, then this input is satisfied only when {@code func} is first unsatisfied.
+	 * @return Returns true if the input could be added, that is if {@code func} is not a duplicate {@code InputFunction} under the same name.
+	 */
+	public boolean AddInput(String input, InputFunction func, boolean satisfied)
+	{
+		DictionaryEntry t = null;
+		
+		// We first create the modified input function
+		TypeWrapper wrapper = new TypeWrapper(satisfied ? func.Evaluate() : !func.Evaluate());
+		InputFunction type = () ->
+						 {
+							boolean val = func.Evaluate();
+							
+							// If our input is ready, then we should check if we're either satisfied or unsatisfied as we desire
+							if(wrapper.Ready)
+								if(satisfied && val)
+								{
+									wrapper.Ready = false;
+									return true;
+								}
+								else if(!satisfied && !val)
+								{
+									wrapper.Ready = false;
+									return true;
+								}
+								else
+									return false;
+							
+							// Our input is not ready, so see if it's ready to be ready
+							if(satisfied && !val || !satisfied && val)
+								wrapper.Ready = true;
+							
+							return false;
+						 };
+		
+		// If this is a new input, just add it
+		if(!Inputs.ContainsKey(input))
+		{
+			t = new DictionaryEntry(input,LatestTime);
+			t.Formula = new LinkedList<InputFunction>();
+
+			if(func != null) // Special case: we allow inputs to be created without anything to satisfy them, so it's fine to use null for func
+				t.Formula.AddFront(type);
+			
+			Inputs.Add(input,t);
+			return true;
+		}
+		else if(func == null)
+			return false;
+		else
+			t = Inputs.Get(input);
+		
+		// We now should make sure we're not trying to add a duplicate
+		if(t.Formula.contains(type))
+			return false;
+		
+		t.Formula.AddLast(type);
 		return true;
 	}
 	
@@ -578,6 +644,21 @@ public class InputManager implements IUpdatable
 		 */
 		public boolean RawUnsatisfied()
 		{return WhenUnsatisfied > WhenSatisfied;}
+	}
+	
+	/**
+	 * A wrapper around a keypress to allow us remember if a key was pressed or not.
+	 * @author Dawn Nye
+	 */
+	protected class TypeWrapper
+	{
+		public TypeWrapper(boolean ready)
+		{
+			Ready = ready;
+			return;
+		}
+		
+		public boolean Ready;
 	}
 	
 	/**
