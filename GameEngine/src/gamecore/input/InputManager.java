@@ -56,6 +56,8 @@ public class InputManager implements IUpdatable
 				t.WhenUnsatisfied = LatestTime;
 			else if(b && t.RawUnsatisfied())
 				t.WhenSatisfied = LatestTime;
+			else if(!t.RawSatisfied() && !t.RawUnsatisfied())
+				t.WhenUnsatisfied = LatestTime; // A failsafe to avoid deadlock
 		}
 		
 		return;
