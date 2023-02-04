@@ -196,7 +196,7 @@ public class AABBTree<T> implements Collection<T>
 	}
 	
 	/**
-	 *  Finds the first instance of {@code item} via a breadth first search of the tree.
+	 * Finds the first instance of {@code item} via a breadth first search of the tree.
 	 * @param item The item to find.
 	 * @return The first instance of the given item in the tree or null if it doesn't exist.
 	 */
