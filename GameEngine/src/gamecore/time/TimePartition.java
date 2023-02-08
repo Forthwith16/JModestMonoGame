@@ -877,7 +877,7 @@ public class TimePartition implements IUpdatable, IObservable<TimeEvent>
 		
 		protected EventType Type;
 		
-		public enum EventType
+		public static enum EventType
 		{
 			INVALID,
 			PLAY,
