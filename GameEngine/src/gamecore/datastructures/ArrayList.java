@@ -212,6 +212,9 @@ public class ArrayList<T> implements List<T>
 	
 	public boolean removeAll(Collection<?> c)
 	{
+		if(c == null)
+			throw new NullPointerException();
+		
 		int shift = 0;
 		
 		for(int i = 0;i < size();i++)
@@ -236,6 +239,9 @@ public class ArrayList<T> implements List<T>
 	
 	public boolean retainAll(Collection<?> c)
 	{
+		if(c == null)
+			throw new NullPointerException();
+		
 		int shift = 0;
 		
 		for(int i = 0;i < size();i++)

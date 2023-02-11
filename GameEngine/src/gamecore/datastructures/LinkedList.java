@@ -297,6 +297,9 @@ public class LinkedList<T> implements List<T>
 	
 	public boolean removeAll(Collection<?> c)
 	{
+		if(c == null)
+			throw new NullPointerException();
+		
 		boolean ret = false;
 		Node n = Head;
 		
@@ -314,6 +317,9 @@ public class LinkedList<T> implements List<T>
 
 	public boolean retainAll(Collection<?> c)
 	{
+		if(c == null)
+			throw new NullPointerException();
+		
 		boolean ret = false;
 		Node n = Head;
 		

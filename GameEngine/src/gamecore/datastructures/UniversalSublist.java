@@ -144,12 +144,32 @@ public final class UniversalSublist<T> implements List<T>
 	}
 	
 	public boolean removeAll(Collection<?> c)
-	{ // TODO Auto-generated method stub
-	return false; }
+	{
+		boolean ret = false;
+		
+		for(int i = Left;i < Right;i++)
+			if(c.contains(TheList.get(i)))
+			{
+				ret = true;
+				remove(i - Left);
+			}
+		
+		return ret;
+	}
 	
 	public boolean retainAll(Collection<?> c)
-	{ // TODO Auto-generated method stub
-	return false; }
+	{
+		boolean ret = false;
+		
+		for(int i = Left;i < Right;i++)
+			if(!c.contains(TheList.get(i)))
+			{
+				ret = true;
+				remove(i - Left);
+			}
+		
+		return ret;
+	}
 	
 	public int indexOf(Object o)
 	{

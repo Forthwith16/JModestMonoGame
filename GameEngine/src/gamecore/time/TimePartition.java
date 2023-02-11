@@ -664,7 +664,7 @@ public class TimePartition implements IUpdatable, IObservable<TimeEvent>
 	 * Represents something happening in the timeline.
 	 * @author Dawn Nye
 	 */
-	public class TimeEvent
+	public static class TimeEvent
 	{
 		/**
 		 * Creates an end of time event.
