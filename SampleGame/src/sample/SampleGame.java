@@ -9,6 +9,7 @@ import gamecore.datastructures.vectors.Vector2i;
 import gamecore.gui.gamecomponents.AnimatedComponent;
 import gamecore.input.InputManager;
 import gamecore.input.InputMap;
+import gamecore.input.MouseStateMonitor;
 import gamecore.sprites.Animation;
 
 /**
@@ -58,6 +59,8 @@ public class SampleGame extends GameEngine
 		Bindings.AddKeyBinding("a_Down",KeyEvent.VK_S);
 		Bindings.AddORBinding("Down","m_Down","a_Down");
 		
+		Bindings.AddMouseButtonBinding("Click",Bindings.VB_LEFT_MOUSE_BUTTON);
+		
 		// Initialize some input tracking
 		Input.AddInput("A",() -> Bindings.GetBinding("A").DigitalEvaluation.Evaluate());
 		Input.AddInput("B",() -> Bindings.GetBinding("B").DigitalEvaluation.Evaluate());
@@ -66,6 +69,7 @@ public class SampleGame extends GameEngine
 		Input.AddInput("Right",() -> Bindings.GetBinding("Right").DigitalEvaluation.Evaluate());
 		Input.AddInput("Up",() -> Bindings.GetBinding("Up").DigitalEvaluation.Evaluate());
 		Input.AddInput("Down",() -> Bindings.GetBinding("Down").DigitalEvaluation.Evaluate());
+		Input.AddInput("Click",() -> Bindings.GetBinding("Click").DigitalEvaluation.Evaluate(),true);
 		
 		// Create a koopa troopa
 		try
@@ -105,6 +109,9 @@ public class SampleGame extends GameEngine
 		
 		if(!delta_p.IsZero())
 			Koopa.Translate(delta_p.Normalized().Multiply(speed));
+		
+		if(Input.GracelessInputSatisfied("Click"))
+			Koopa.Translate(MouseStateMonitor.GetState().GetPosition().Subtract(Koopa.GetPosition()));
 		
 		return;
 	}

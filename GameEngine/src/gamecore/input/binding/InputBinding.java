@@ -28,6 +28,12 @@ public abstract class InputBinding
 	{return false;}
 	
 	/**
+	 * True iff this is a mouse binding.
+	 */
+	public boolean IsMouseBinding()
+	{return false;}
+	
+	/**
 	 * The name of this binding.
 	 */
 	public final String Name;

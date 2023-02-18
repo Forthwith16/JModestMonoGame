@@ -10,6 +10,7 @@ import gamecore.input.binding.InputBinding;
 import gamecore.input.binding.InputBinding.InputAnalogueValue;
 import gamecore.input.binding.InputBinding.InputDigitalValue;
 import gamecore.input.binding.KeyBinding;
+import gamecore.input.binding.MouseButtonBinding;
 
 /**
  * Maps string names to raw input commands.
@@ -93,8 +94,20 @@ public class InputMap
 		return;
 	}
 	
-	
-	
+	/**
+	 * Adds a mouse button binding.
+	 * If a binding with the given name already exists, it is overwritten.
+	 * @param name The name of the binding.
+	 * @param button
+	 * The button to bind.
+	 * The input values here are the button values found in this class.
+	 * Each is prefixed with VB_ to make finding them easy.
+	 */
+	public void AddMouseButtonBinding(String name, int button)
+	{
+		map.Put(name,new MouseButtonBinding(name,button));
+		return;
+	}
 	
 	/**
 	 * Combines two bindings (without eliminating their original bindings) as follows.
@@ -253,4 +266,24 @@ public class InputMap
 	 * The singleton instance of this class.
 	 */
 	private static InputMap _m;
+	
+	public static final int VB_LEFT_MOUSE_BUTTON = 1;
+	public static final int VB_MIDDLE_MOUSE_BUTTON = 2;
+	public static final int VB_RIGHT_MOUSE_BUTTON = 3;
+	
+	public static final int VB_MOUSE_BUTTON_4 = 4;
+	public static final int VB_MOUSE_BUTTON_5 = 5;
+	public static final int VB_MOUSE_BUTTON_6 = 6;
+	public static final int VB_MOUSE_BUTTON_7 = 7;
+	public static final int VB_MOUSE_BUTTON_8 = 8;
+	public static final int VB_MOUSE_BUTTON_9 = 9;
+	public static final int VB_MOUSE_BUTTON_10 = 10;
+	public static final int VB_MOUSE_BUTTON_11 = 11;
+	public static final int VB_MOUSE_BUTTON_12 = 12;
+	public static final int VB_MOUSE_BUTTON_13 = 13;
+	public static final int VB_MOUSE_BUTTON_14 = 14;
+	public static final int VB_MOUSE_BUTTON_15 = 15;
+	public static final int VB_MOUSE_BUTTON_16 = 16;
+	public static final int VB_MOUSE_BUTTON_17 = 17;
+	public static final int VB_MOUSE_BUTTON_18 = 18;
 }
