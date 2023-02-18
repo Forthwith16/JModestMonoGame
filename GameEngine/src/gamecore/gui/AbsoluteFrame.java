@@ -9,6 +9,7 @@ import javax.swing.JFrame;
 
 import gamecore.datastructures.vectors.Vector2i;
 import gamecore.input.KeyboardStateMonitor;
+import gamecore.input.MouseStateMonitor;
 
 /**
  * Allows a user to do basic positioning when adding things to a frame like a sane person.
@@ -68,23 +69,36 @@ public class AbsoluteFrame extends JFrame
 	 */
 	public AbsoluteFrame(String title, Image icon, int w, int h, Color bgc)
 	{
+		// Set the title bar properties
 		setTitle(title);
 		
 		if(icon != null)
 			setIconImage(icon);
 		
+		// Set the basic window properties
 		setSize(w,h);
 		setResizable(false);
 		
 		getContentPane().setLayout(null);
 		getContentPane().setBackground(bgc == null ? new Color(100,149,237) : bgc);
 		
+		// Add the keyboard monitor
 		addKeyListener(KeyboardStateMonitor.GetMonitor());
 		setFocusTraversalKeysEnabled(false);
 		
 		getContentPane().addKeyListener(KeyboardStateMonitor.GetMonitor());
 		getContentPane().setFocusTraversalKeysEnabled(false);
 		
+		// Add the mouse monitor
+		addMouseListener(MouseStateMonitor.GetMonitor());
+		addMouseMotionListener(MouseStateMonitor.GetMonitor());
+		addMouseWheelListener(MouseStateMonitor.GetMonitor());
+		
+		getContentPane().addMouseListener(MouseStateMonitor.GetMonitor());
+		getContentPane().addMouseMotionListener(MouseStateMonitor.GetMonitor());
+		getContentPane().addMouseWheelListener(MouseStateMonitor.GetMonitor());
+		
+		// Make sure we close on exit and are visible
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setVisible(true);
 		

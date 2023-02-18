@@ -365,6 +365,22 @@ public abstract class AffineComponent extends JComponent
 	}
 	
 	/**
+	 * Obtains the position of this AffineComponent.
+	 * In other words, this multiplies the vector (0,0) by the transformation to obtain a position (x,y).
+	 * @return Returns the position of this AffineComponent.
+	 */
+	public Vector2d GetPosition()
+	{return M.RightMultiply(Vector2d.ZERO);}
+	
+	/**
+	 * Obtains a deep copy of the matrix backing the affine transformation.
+	 * @param include_parent If true, we include the parent transform. If false, we omit it. If there is no parent, then the parent matrix is treated as the identity matrix.
+	 * @return Returns a deep copy of the matrix transformation behind this AffineComponent.
+	 */
+	public Matrix2D GetMatrix(boolean include_parent)
+	{return include_parent && Parent != null ? new Matrix2D(M).RightMultiply(Parent.M) : new Matrix2D(M);}
+	
+	/**
 	 * Obtains the affine transformation applied to the contents of this component.
 	 * @param include_parent If true, we include the parent transform. If false, we omit it. If there is no parent, then the parent matrix is treated as the identity matrix.
 	 * @return Returns the affine transformation applied to the contents of this component.

@@ -4,6 +4,12 @@ import java.util.NoSuchElementException;
 
 import gamecore.datastructures.Dictionary;
 import gamecore.datastructures.LinkedList;
+import gamecore.input.binding.ConstantBinding;
+import gamecore.input.binding.CustomBinding;
+import gamecore.input.binding.InputBinding;
+import gamecore.input.binding.InputBinding.InputAnalogueValue;
+import gamecore.input.binding.InputBinding.InputDigitalValue;
+import gamecore.input.binding.KeyBinding;
 
 /**
  * Maps string names to raw input commands.
@@ -44,7 +50,7 @@ public class InputMap
 	 */
 	public void AddEmptyBinding(String name)
 	{
-		map.Put(name,new InputBinding(name,false));
+		map.Put(name,new ConstantBinding(name,false));
 		return;
 	}
 	
@@ -57,7 +63,7 @@ public class InputMap
 	 */
 	public void AddConstantBinding(String name, boolean satisfied)
 	{
-		map.Put(name,new InputBinding(name,satisfied));
+		map.Put(name,new ConstantBinding(name,satisfied));
 		return;
 	}
 	
@@ -71,7 +77,7 @@ public class InputMap
 	 */
 	public void AddConstantBinding(String name, boolean b_value, double a_value)
 	{
-		map.Put(name,new InputBinding(name,b_value,a_value));
+		map.Put(name,new ConstantBinding(name,b_value,a_value));
 		return;
 	}
 	
@@ -83,9 +89,12 @@ public class InputMap
 	 */
 	public void AddKeyBinding(String name, int key)
 	{
-		map.Put(name,new InputBinding(name,key));
+		map.Put(name,new KeyBinding(name,key));
 		return;
 	}
+	
+	
+	
 	
 	/**
 	 * Combines two bindings (without eliminating their original bindings) as follows.
@@ -100,7 +109,7 @@ public class InputMap
 		if(name == binding_a || name == binding_b)
 			return;
 		
-		map.Put(name,new InputBinding(name,() -> map.Get(binding_a).DigitalEvaluation.Evaluate() && map.Get(binding_b).DigitalEvaluation.Evaluate(),
+		map.Put(name,new CustomBinding(name,() -> map.Get(binding_a).DigitalEvaluation.Evaluate() && map.Get(binding_b).DigitalEvaluation.Evaluate(),
 				() -> Math.min(map.Get(binding_a).AnalogueEvaluation.Evaluate(),map.Get(binding_b).AnalogueEvaluation.Evaluate())));
 		return;
 	}
@@ -118,7 +127,7 @@ public class InputMap
 		if(name == binding_a || name == binding_b)
 			return;
 		
-		map.Put(name,new InputBinding(name,() -> map.Get(binding_a).DigitalEvaluation.Evaluate() || map.Get(binding_b).DigitalEvaluation.Evaluate(),
+		map.Put(name,new CustomBinding(name,() -> map.Get(binding_a).DigitalEvaluation.Evaluate() || map.Get(binding_b).DigitalEvaluation.Evaluate(),
 									() -> Math.max(map.Get(binding_a).AnalogueEvaluation.Evaluate(),map.Get(binding_b).AnalogueEvaluation.Evaluate())));
 		return;
 	}
@@ -135,7 +144,7 @@ public class InputMap
 		if(name == binding)
 			return;
 		
-		map.Put(name,new InputBinding(name,() -> !map.Get(binding).DigitalEvaluation.Evaluate(),() -> -map.Get(binding).AnalogueEvaluation.Evaluate()));
+		map.Put(name,new CustomBinding(name,() -> !map.Get(binding).DigitalEvaluation.Evaluate(),() -> -map.Get(binding).AnalogueEvaluation.Evaluate()));
 		return;
 	}
 	
@@ -151,8 +160,21 @@ public class InputMap
 		
 		// We don't just use the evaluations themselves because we want to keep track of changes
 		// This does slow things down a bit and requires that they prerequisite bindings don't disappear, but this is reasonable 
-		map.Put(name,new InputBinding(name,() -> map.Get(binding).DigitalEvaluation.Evaluate(),() -> map.Get(binding).AnalogueEvaluation.Evaluate()));
+		map.Put(name,new CustomBinding(name,() -> map.Get(binding).DigitalEvaluation.Evaluate(),() -> map.Get(binding).AnalogueEvaluation.Evaluate()));
 		
+		return;
+	}
+	
+	/**
+	 * Adds an arbitrary, free-form input binding.
+	 * Use this with caution but without worry, as it is safe but comes without the conveniences other Add wrapper functions offer.
+	 * @param name The name of the binding.
+	 * @param d_evaluation The digital evaluation function.
+	 * @param a_evaluation The analogue evaluation function.
+	 */
+	public void AddArbitraryBinding(String name, InputDigitalValue d_evaluation, InputAnalogueValue a_evaluation)
+	{
+		map.Put(name,new CustomBinding(name,d_evaluation,a_evaluation));
 		return;
 	}
 	
@@ -231,156 +253,4 @@ public class InputMap
 	 * The singleton instance of this class.
 	 */
 	private static InputMap _m;
-	
-	/**
-	 * Encapsulates an input binding.
-	 * @author Dawn Nye
-	 */
-	public class InputBinding
-	{
-		/**
-		 * Creates an empty input binding that always evaluates to false or 0.0.
-		 * @param name The name of the binding.
-		 */
-		public InputBinding(String name)
-		{
-			Name = name;
-			
-			BoundKey = VK_NONE;
-			
-			DigitalEvaluation = () -> false;
-			AnalogueEvaluation = () -> 0.0;
-			
-			return;
-		}
-		
-		/**
-		 * Creates an empty input binding that always has the provided constant value.
-		 * @param name The name of the binding.
-		 * @param value DigitalEvaluation resolves to this while AnalogueEvaluation resolves to 0.0f for false and 1.0f for true.
-		 */
-		public InputBinding(String name, boolean value)
-		{
-			Name = name;
-			
-			BoundKey = VK_NONE;
-			
-			DigitalEvaluation = () -> value;
-			AnalogueEvaluation = () -> (value ? 1.0 : 0.0);
-			
-			return;
-		}
-		
-		/**
-		 * Creates an empty input binding that always has the provided constant values.
-		 * @param name The name of the binding.
-		 * @param b_value DigitalEvaluation resolves to this.
-		 * @param a_value AnalogueEvaluation resolves to this.
-		 */
-		public InputBinding(String name, boolean b_value, double a_value)
-		{
-			Name = name;
-			
-			BoundKey = VK_NONE;
-			
-			DigitalEvaluation = () -> b_value;
-			AnalogueEvaluation = () -> a_value;
-			
-			return;
-		}
-		
-		/**
-		 * Creates a new input binding from a key.
-		 * @param name The name of the binding.
-		 * @param key The key bound. The key values are given by KeyEvent's VK values.
-		 */
-		public InputBinding(String name, int key)
-		{
-			Name = name;
-			
-			BoundKey = key;
-			
-			DigitalEvaluation = () -> KeyboardStateMonitor.GetState().IsKeyPressed(key);
-			AnalogueEvaluation = () -> KeyboardStateMonitor.GetState().IsKeyPressed(key) ? 1.0f : 0.0f;
-			
-			return;
-		}
-		
-		/**
-		 * Creates a new input binding with custom evaluation functions.
-		 * @param name The name of the binding.
-		 * @param digital The digital evaluation.
-		 * @param analogue The analogue evaluation.
-		 */
-		public InputBinding(String name, InputDigitalValue digital, InputAnalogueValue analogue)
-		{
-			Name = name;
-			
-			BoundKey = VK_NONE;
-			
-			DigitalEvaluation = digital;
-			AnalogueEvaluation = analogue;
-			
-			return;
-		}
-		
-		/**
-		 * True iff this is a key binding.
-		 */
-		public boolean IsKeyBinding()
-		{return BoundKey != VK_NONE;}
-		
-		/**
-		 * The name of this binding.
-		 */
-		public final String Name;
-		
-		/**
-		 * The bound key.
-		 * The values this can take are the VK values in Java's KeyEvent.
-		 */
-		public final int BoundKey;
-		
-		/**
-		 * Evaluates this binding digitally.
-		 */
-		public InputDigitalValue DigitalEvaluation;
-		
-		/**
-		 * Evaluates this binding as an analogue range.
-		 * If this binding does not stem from an analogue source, the resulting value is either 0.0 or 1.0
-		 */
-		public InputAnalogueValue AnalogueEvaluation;
-		
-		/**
-		 * The key code for there not being a key.
-		 */
-		public static final int VK_NONE = -1;
-	}
-	
-	/**
-	 * Determines the digital value of an input.
-	 * @author Dawn Nye
-	 */
-	@FunctionalInterface public interface InputDigitalValue
-	{
-		/**
-		 * Determines the digital value of an input.
-		 * @return Returns true if the input condition is digitally satisfied and false otherwise.
-		 */
-		public abstract boolean Evaluate();
-	}
-	
-	/**
-	 * Determines the analogue value of an input.
-	 * @author Dawn Nye
-	 */
-	@FunctionalInterface public interface InputAnalogueValue
-	{
-		/**
-		 * Determines the analogue value of an input.
-		 * @return Returns the analogue value of the input.
-		 */
-		public abstract double Evaluate();
-	}
 }

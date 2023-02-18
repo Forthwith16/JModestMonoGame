@@ -640,11 +640,11 @@ public abstract class GameEngine implements Runnable
 	{return Frame;}
 	
 	/**
-	 * Obtains the number of elapsed update frames.
-	 * @return Returns the current update frame. This is always equal to Frame().
+	 * Obtains the number of fully elapsed update frames.
+	 * @return Returns the current update frame. This is always one less than Frame().
 	 */
 	public int ElapsedFrames()
-	{return Frame;}
+	{return Frame - 1;}
 	
 	/**
 	 * Determines if the game engine is currently finishing.

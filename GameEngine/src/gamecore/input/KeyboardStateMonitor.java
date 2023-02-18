@@ -59,7 +59,7 @@ public class KeyboardStateMonitor implements KeyListener
 	{
 		// We make a copy because we want to preserve a snapshot of the keyboard at the state when it was requested
 		if(State == null)
-			return State = GetMonitor().new KeyboardState(GetMonitor().CurrentState);
+			return State = new KeyboardState(GetMonitor().CurrentState);
 		
 		return State;
 	}
@@ -78,7 +78,7 @@ public class KeyboardStateMonitor implements KeyListener
 	 * A state of the keyboard.
 	 * @author Dawn Nye
 	 */
-	public class KeyboardState
+	public static class KeyboardState
 	{
 		/**
 		 * Creates a blank keyboard state.
@@ -107,7 +107,7 @@ public class KeyboardStateMonitor implements KeyListener
 		/**
 		 * Updates the known state of the keyboard.
 		 * @param e The keyboard state delta.
-		 * @param pressed If true, then this was a key press event.
+		 * @param pressed If true, then this was a key press event. If false, it was a key release event.
 		 */
 		protected void UpdateState(KeyEvent e, boolean pressed)
 		{
@@ -171,7 +171,7 @@ public class KeyboardStateMonitor implements KeyListener
 		/**
 		 * The keyboard states.
 		 * A value of true indicates that the key is pressed.
-		 * A value of false indicates that they key is released.
+		 * A value of false indicates that the key is released.
 		 */
 		protected boolean[] KeyStates;
 		
