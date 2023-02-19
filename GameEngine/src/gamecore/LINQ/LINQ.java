@@ -166,6 +166,20 @@ public final class LINQ
 		return ret;
 	}
 	
+	public static void main(String[] args)
+	{
+		LinkedList<Integer> l = new LinkedList<Integer>();
+		
+		for(int i = 0;i < 10;i++)
+		{
+			l.add(i);
+			l.add(i);
+		}
+		
+		for(Integer i : Distinct(l))
+			System.out.print(i + " ");
+	}
+	
 	/**
 	 * Filters an iterable object so that each element iterated appears exactly once.
 	 * The order of the new sequence will be such that if a and b appear in the new sequence, then a first occurs in {@code source} before b first occurs.
@@ -195,12 +209,11 @@ public final class LINQ
 						while(Iter.hasNext())
 						{
 							T temp = Iter.next();
+							Index++;
 							
-							if(!Items.contains(temp))
+							if(IndexOf(source,temp) == Index) // If the current index is the first index of the element, then it's distinct (but subsequent versions of it are not)
 							{
 								Next = temp;
-								Items.add(temp);
-								
 								return true;
 							}
 						}
@@ -218,7 +231,7 @@ public final class LINQ
 						return ret;
 					}
 					
-					protected LinkedList<T> Items = new LinkedList<T>();
+					protected int Index = -1;
 					protected T Next = null;
 					protected Iterator<? extends T> Iter = source.iterator();
 				};
@@ -283,9 +296,9 @@ public final class LINQ
 	
 	/**
 	 * Computes the set difference of {@code source} minus {@code except}.
-	 * The order of the output elements is the same as the order they appear in {@code source}.
+	 * The order of the output elements is the same as the order they appear in {@code source} and are distinct.
 	 * <br><br>
-	 * For example, given the sequences {1,2,3} and {2,4}, we produce the sequence {1,3}.
+	 * For example, given the sequences {1,2,3,3} and {2,4}, we produce the sequence {1,3}.
 	 * @param <T> The iterable type.
 	 * @param source The source set.
 	 * @param except The set to exclude.
@@ -339,6 +352,64 @@ public final class LINQ
 	}
 	
 	/**
+	 * Finds the first index of {@code target} in {@code source}.
+	 * @param <T> The iterable type.
+	 * @param source The source sequence.
+	 * @param target The element to look for.
+	 * @return Returns the index of the first instance of {@code target} in {@code source} or -1 if it is not present.
+	 * @throws NullPointerException Thrown if {@code source} is null.
+	 */
+	public static <T> int IndexOf(Iterable<? extends T> source, T target)
+	{
+		if(source == null)
+			throw new NullPointerException();
+		
+		int i = 0;
+		
+		for(T t : source)
+			if(t == null ? target == null : t.equals(target))
+				return i;
+			else
+				i++;
+		
+		return -1;
+	}
+	
+	/**
+	 * Finds the first index of {@code target} in {@code source}.
+	 * Starts looking at index {@code start}.
+	 * @param <T> The iterable type.
+	 * @param source The source sequence.
+	 * @param target The element to look for.
+	 * @param start The index to start looking at.
+	 * @return Returns the index of the first instance of {@code target} in {@code source} at or after index {@code start} or -1 if it is not present.
+	 * @throws NullPointerException Thrown if {@code source} is null.
+	 * @throws IndexOutOfBoundsException Thrown if {@code start} is less than zero or at least the length of the sequence.
+	 */
+	public static <T> int IndexOf(Iterable<? extends T> source, T target, int start)
+	{
+		if(source == null)
+			throw new NullPointerException();
+		
+		if(start < 0)
+			throw new IndexOutOfBoundsException();
+		
+		int i = 0;
+		
+		for(T t : source)
+			if(i >= start && (t == null ? target == null : t.equals(target)))
+				return i; // We know that start < Count since we have i >= start
+			else
+				i++;
+		
+		// i is equal to Count at this point
+		if(start >= i)
+			throw new IndexOutOfBoundsException();
+		
+		return -1;
+	}
+	
+	/**
 	 * Computes the intersection of {@code source_a} and {@code source_b}.
 	 * The order of the output sequence is the same order that the elements appear in {@code source_a}
 	 * <br><br>
@@ -355,6 +426,67 @@ public final class LINQ
 			throw new NullPointerException();
 		
 		return Distinct(Where(source_a,t -> Contains(source_b,t)));
+	}
+	
+	/**
+	 * Finds the last index of {@code target} in {@code source}.
+	 * @param <T> The iterable type.
+	 * @param source The source sequence.
+	 * @param target The element to look for.
+	 * @return Returns the index of the last instance of {@code target} in {@code source} or -1 if it is not present.
+	 * @throws NullPointerException Thrown if {@code source} is null.
+	 */
+	public static <T> int LastIndexOf(Iterable<? extends T> source, T target)
+	{
+		if(source == null)
+			throw new NullPointerException();
+		
+		int i = 0;
+		int ret = -1;
+		
+		for(T t : source)
+			if(t == null ? target == null : t.equals(target))
+				ret = i++;
+			else
+				i++;
+		
+		return ret;
+	}
+	
+	/**
+	 * Finds the last index of {@code target} in {@code source}.
+	 * Stops looking at index {@code end}.
+	 * @param <T> The iterable type.
+	 * @param source The source sequence.
+	 * @param target The element to look for.
+	 * @param end The last index to look at (exclusive).
+	 * @return Returns the index of the last instance of {@code target} in {@code source} before index {@code end} or -1 if it is not present.
+	 * @throws NullPointerException Thrown if {@code source} is null.
+	 * @throws IndexOutOfBoundsException Thrown if {@code end} is less than zero or greater than the length of the sequence.
+	 */
+	public static <T> int LastIndexOf(Iterable<? extends T> source, T target, int end)
+	{
+		if(source == null)
+			throw new NullPointerException();
+		
+		if(end < 0)
+			throw new IndexOutOfBoundsException();
+		
+		int i = 0;
+		int ret = -1;
+		
+		for(T t : source)
+			if(i < end && (t == null ? target == null : t.equals(target)))
+				ret = i++;
+			else // If i >= end, we still need to compute Count
+				i++;
+		
+		// i is equal to Count at this point
+		// end is exclusive, so Count is permitted
+		if(end > i)
+			throw new IndexOutOfBoundsException();
+		
+		return ret;
 	}
 	
 	/**
