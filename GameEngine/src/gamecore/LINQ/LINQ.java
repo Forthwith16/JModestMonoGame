@@ -297,7 +297,7 @@ public final class LINQ
 		if(source == null || except == null)
 			throw new NullPointerException();
 		
-		return Where(source,t -> !Contains(except,t));
+		return Distinct(Where(source,t -> !Contains(except,t)));
 	}
 	
 	/**
@@ -339,7 +339,7 @@ public final class LINQ
 	}
 	
 	/**
-	 * Computes the intersection of {@code source_b} minus {@code source_b}.
+	 * Computes the intersection of {@code source_a} and {@code source_b}.
 	 * The order of the output sequence is the same order that the elements appear in {@code source_a}
 	 * <br><br>
 	 * For example, given the sequences {1,2,3,4} and {2,5,4}, we produce the sequence {2,4}.
@@ -354,7 +354,7 @@ public final class LINQ
 		if(source_a == null || source_b == null)
 			throw new NullPointerException();
 		
-		return Where(source_a,t -> Contains(source_b,t));
+		return Distinct(Where(source_a,t -> Contains(source_b,t)));
 	}
 	
 	/**
@@ -733,14 +733,14 @@ public final class LINQ
 	 * This function applies {@code operation} to each successive element of {@code source} with the result of the previous invocation.
 	 * The lefthand side of the first invocation of {@code operation} is null.
 	 * <br><br>
-	 * For example, given the sequence {1,2,3,4} and the transformation of [previous] * [input], we produce the Double sequence {null * 1 = 1,2,6,24}.
+	 * For example, given the sequence {1,2,3,4} and the transformation of [previous] * [input], we produce the Double sequence {(null * 1 = 1),2,6,24}.
 	 * @param <T> The iterable type.
 	 * @param source The source sequence.
 	 * @param operation The operation to perform.
 	 * @return Returns the 'sum' of the sequence {@code source}. In the degenerate 'sum' when {@code source} is empty, this will return null.
 	 * @throws NullPointerException Thrown if {@code source} or {@code operation} is null.
 	 */
-	public static <T> T Sum(Iterable<? extends T> source, DoubleInputTransformation<T,T> operation)
+	public static <T> T Sum(Iterable<? extends T> source, BinaryOperation<T,T> operation)
 	{
 		if(source == null || operation == null)
 			throw new NullPointerException();
@@ -813,10 +813,10 @@ public final class LINQ
 	}
 	
 	/**
-	 * Computes the union of {@code source_a} minus {@code source_b}.
-	 * The order of the output sequence is all elements of {@code source_a} in the order they appear and then all elements of {@code source_b} in the order they appear that are not in {@code source_a}.
+	 * Computes the union of {@code source_a} and {@code source_b}.
+	 * The order of the output sequence is all distinct elements of {@code source_a} in the order they appear and then all distinct elements of {@code source_b} in the order they appear that are not in {@code source_a}.
 	 * <br><br>
-	 * For example, given the sequences {1,2,3} and {3,4,5}, we produce the sequence {1,2,3,4,5}.
+	 * For example, given the sequences {1,2,3,3} and {3,4,5}, we produce the sequence {1,2,3,4,5}.
 	 * @param <T> The iterable type.
 	 * @param source_a The first set.
 	 * @param source_b The second set.
@@ -828,7 +828,7 @@ public final class LINQ
 		if(source_a == null || source_b == null)
 			throw new NullPointerException();
 		
-		return Concatenate(source_a,Where(source_b,t -> !Contains(source_a,t)));
+		return Distinct(Concatenate(source_a,source_b));
 	}
 	
 	/**
@@ -970,5 +970,20 @@ public final class LINQ
 		 * The value provided is null when there is no previous output value.
 		 */
 		public abstract O Evaluate(I input, O previous);
+	}
+	
+	/**
+	 * Performs a binary operation.
+	 * @author Dawn Nye
+	 */
+	@FunctionalInterface public interface BinaryOperation<I,O>
+	{
+		/**
+		 * Performs a binary operation.
+		 * @param LHS The left hand side of the operation.
+		 * @param RHS The right hand side of the operation.
+		 * @return Returns the result of the operation.
+		 */
+		public abstract O Evaluate(I LHS, I RHS);
 	}
 }
