@@ -36,6 +36,26 @@ public final class LINQ
 	}
 	
 	/**
+	 * Determines if any element of {@code source} satisfies {@code predicate}.
+	 * @param <T> The iterable type.
+	 * @param source The source iterable object.
+	 * @param predicate The predicate an object in {@code source} must satisfy.
+	 * @return Returns true if any element of {@code source} satisfies {@code predicate} and false otherwise.
+	 * @throws NullPointerException Thrown if {@code source} or {@code predicate} is null.
+	 */
+	public static <T> boolean Any(Iterable<? extends T> source, SingleInputPredicate<T> predicate)
+	{
+		if(source == null || predicate == null)
+			throw new NullPointerException();
+		
+		for(T t : source)
+			if(predicate.Evaluate(t))
+				return true;
+		
+		return false;
+	}
+	
+	/**
 	 * Returns a new iterable object with {@code obj} appended to the end of {@code source}.
 	 * <br><br>
 	 * For example, given the sequence {1,2,3} and the element 0, we produce the sequence {1,2,3,0}.
