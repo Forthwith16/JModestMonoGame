@@ -8,7 +8,7 @@ import java.util.ListIterator;
 import java.util.NoSuchElementException;
 
 /**
- * A double linked list backed collection.
+ * A doubly linked list backed collection.
  * The linked list possesses a dummy head and tail node.
  * @author Dawn Nye
  */
