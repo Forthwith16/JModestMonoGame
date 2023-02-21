@@ -186,20 +186,6 @@ public final class LINQ
 		return ret;
 	}
 	
-	public static void main(String[] args)
-	{
-		LinkedList<Integer> l = new LinkedList<Integer>();
-		
-		for(int i = 0;i < 10;i++)
-		{
-			l.add(i);
-			l.add(i);
-		}
-		
-		for(Integer i : Distinct(l))
-			System.out.print(i + " ");
-	}
-	
 	/**
 	 * Filters an iterable object so that each element iterated appears exactly once.
 	 * The order of the new sequence will be such that if a and b appear in the new sequence, then a first occurs in {@code source} before b first occurs.
