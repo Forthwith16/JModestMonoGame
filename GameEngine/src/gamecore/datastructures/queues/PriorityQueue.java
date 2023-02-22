@@ -75,7 +75,10 @@ public class PriorityQueue<T> implements IQueue<T>
 	{return Heap.AddAll(c);}
 	
 	public T Dequeue()
-	{return IsEmpty() ? null : Heap.RemoveTop();}
+	{return Heap.RemoveTop();}
+	
+	public T Front()
+	{return Heap.Top();}
 	
 	public void Clear()
 	{
@@ -91,9 +94,6 @@ public class PriorityQueue<T> implements IQueue<T>
 	
 	public Iterator<T> iterator()
 	{return Heap.iterator();}
-	
-	public T Front()
-	{return IsEmpty() ? null : Heap.Top();}
 	
 	/**
 	 * The backing data strcuture for the queue.

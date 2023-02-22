@@ -1,5 +1,7 @@
 package gamecore.datastructures.heaps;
 
+import java.util.NoSuchElementException;
+
 /**
  * A heap datastructure.
  * @author Dawn Nye
@@ -24,13 +26,15 @@ public interface IHeap<T> extends Iterable<T>
 	
 	/**
 	 * Gets and removes the top element of the heap.
-	 * @return Returns the top element of the heap or null if no such element exists.
+	 * @return Returns the top element of the heap.
+	 * @throws NoSuchElementException Thrown if the heap is empty.
 	 */
 	public T RemoveTop();
 	
 	/**
 	 * Gets the top element of the heap.
-	 * @return Returns the top element of the heap or null if no such element exists.
+	 * @return Returns the top element of the heap.
+	 * @throws NoSuchElementException Thrown if the heap is empty.
 	 */
 	public T Top();
 	

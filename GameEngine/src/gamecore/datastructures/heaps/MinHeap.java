@@ -147,11 +147,12 @@ public class MinHeap<T> implements IHeap<T>
 	/**
 	 * Gets and removes the minimum element from this heap.
 	 * @return Returns the minmum element of this heap or null if the heap is empty.
+	 * @throws NoSuchElementException Thrown if the heap is empty.
 	 */
 	public T RemoveMin()
 	{
 		if(IsEmpty())
-			return null;
+			throw new NoSuchElementException();
 
 		T ret = Root.Item;
 
@@ -341,9 +342,15 @@ public class MinHeap<T> implements IHeap<T>
 	
 	/**
 	 * Returns the minimum element of this heap (or T's default value if there is none).
+	 * @throws NoSuchElementException Thrown if the heap is empty.
 	 */
 	public T Min()
-	{return IsEmpty() ? null : Root.Item;}
+	{
+		if(IsEmpty())
+			throw new NoSuchElementException();
+		
+		return Root.Item;
+	}
 	
 	public void Clear()
 	{

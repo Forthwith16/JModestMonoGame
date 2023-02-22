@@ -272,7 +272,7 @@ public class AABBTree<T> implements Collection<T>
 		if(Root != null && boundary.Intersects(Root.Boundary))
 			frontier.Enqueue(Root);
 		
-		while(frontier.Count() > 0)
+		while(!frontier.IsEmpty())
 		{
 			Node n = frontier.Dequeue();
 			
@@ -312,7 +312,7 @@ public class AABBTree<T> implements Collection<T>
 		if(Root != null && boundary.Intersects(Root.Boundary))
 			frontier.Enqueue(Root);
 
-		while(frontier.Count() > 0)
+		while(!frontier.IsEmpty())
 		{
 			Node n = frontier.Dequeue();
 
@@ -356,7 +356,7 @@ public class AABBTree<T> implements Collection<T>
 		if(Root != null && area.Intersects(Root.Boundary))
 			frontier.Enqueue(Root);
 
-		while(frontier.Count() > 0)
+		while(!frontier.IsEmpty())
 		{
 			Node n = frontier.Dequeue();
 
@@ -394,7 +394,7 @@ public class AABBTree<T> implements Collection<T>
 		if(Root != null && area.Intersects(Root.Boundary))
 			frontier.Enqueue(Root);
 
-		while(frontier.Count() > 0)
+		while(!frontier.IsEmpty())
 		{
 			Node n = frontier.Dequeue();
 
