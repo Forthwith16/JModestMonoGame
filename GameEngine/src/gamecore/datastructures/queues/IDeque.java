@@ -66,18 +66,18 @@ public interface IDeque<T> extends IStack<T>, IQueue<T>
 	public T PollBack();
 	
 	/**
-	 * Clears the queue.
+	 * Clears the deque.
 	 */
 	public void Clear();
 	
 	/**
-	 * The number of items in the queue.
+	 * The number of items in the deque.
 	 */
 	public int Count();
 	
 	/**
-	 * Determines if the queue is empty.
-	 * @return Returns true if the queue is empty and false otherwise.
+	 * Determines if the deque is empty.
+	 * @return Returns true if the deque is empty and false otherwise.
 	 */
 	public boolean IsEmpty();
 }

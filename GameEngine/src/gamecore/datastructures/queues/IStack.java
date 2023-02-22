@@ -39,18 +39,18 @@ public interface IStack<T> extends Iterable<T>
 	public T Peek();
 	
 	/**
-	 * Clears the queue.
+	 * Clears the stack.
 	 */
 	public void Clear();
 	
 	/**
-	 * The number of items in the queue.
+	 * The number of items in the stack.
 	 */
 	public int Count();
 	
 	/**
-	 * Determines if the queue is empty.
-	 * @return Returns true if the queue is empty and false otherwise.
+	 * Determines if the stack is empty.
+	 * @return Returns true if the stack is empty and false otherwise.
 	 */
 	public boolean IsEmpty();
 }
