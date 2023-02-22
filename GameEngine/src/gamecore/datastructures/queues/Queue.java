@@ -37,7 +37,7 @@ public class Queue<T> implements IQueue<T>
 	{return Q.AddAllLast(c);}
 	
 	public T Dequeue()
-	{return IsEmpty() ? null : Q.RemoveFront();}
+	{return Q.RemoveFront();}
 	
 	public void Clear()
 	{
@@ -55,7 +55,7 @@ public class Queue<T> implements IQueue<T>
 	{return Q.iterator();}
 	
 	public T Front()
-	{return IsEmpty() ? null : Q.Front();}
+	{return Q.Front();}
 	
 	/**
 	 * The backing data strcuture for the queue.
