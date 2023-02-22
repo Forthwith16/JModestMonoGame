@@ -57,6 +57,19 @@ public class Queue<T> implements IQueue<T>
 	public T Front()
 	{return Q.Front();}
 	
+	@Override public String toString()
+	{
+		if(IsEmpty())
+			return "{}";
+		
+		String ret = "{";
+		
+		for(T t : this)
+			ret += t + ",";
+		
+		return ret.substring(0,ret.length() - 1) + "}";
+	}
+	
 	/**
 	 * The backing data strcuture for the queue.
 	 */

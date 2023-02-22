@@ -92,6 +92,19 @@ public class Deque<T> implements IDeque<T>
 	public Iterator<T> iterator()
 	{return D.iterator();}
 	
+	@Override public String toString()
+	{
+		if(IsEmpty())
+			return "{}";
+		
+		String ret = "{";
+		
+		for(T t : this)
+			ret += t + ",";
+		
+		return ret.substring(0,ret.length() - 1) + "}";
+	}
+	
 	/**
 	 * The backing datastructure for this deque.
 	 */
