@@ -2,12 +2,14 @@ package gamecore.datastructures.heaps;
 
 import java.util.NoSuchElementException;
 
+import gamecore.datastructures.ICollection;
+
 /**
  * A heap datastructure.
  * @author Dawn Nye
  * @param <T> The type of data stored in the heap.
  */
-public interface IHeap<T> extends Iterable<T>
+public interface IHeap<T> extends ICollection<T>
 {
 	/**
 	 * Adds the given element to the heap.

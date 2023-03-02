@@ -44,6 +44,15 @@ public class Stack<T> implements IStack<T>
 	public T Peek()
 	{return S.Last();}
 	
+	public boolean Add(T t)
+	{return Push(t);}
+
+	public boolean Remove(T t)
+	{return S.Remove(t);}
+
+	public boolean Contains(T t)
+	{return S.Contains(t);}
+	
 	public void Clear()
 	{
 		S.clear();

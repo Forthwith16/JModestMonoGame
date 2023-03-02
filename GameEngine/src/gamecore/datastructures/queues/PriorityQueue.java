@@ -80,6 +80,15 @@ public class PriorityQueue<T> implements IQueue<T>
 	public T Front()
 	{return Heap.Top();}
 	
+	public boolean Add(T t)
+	{return Enqueue(t);}
+
+	public boolean Remove(T t)
+	{return Heap.Remove(t);}
+
+	public boolean Contains(T t)
+	{return Heap.Contains(t);}
+	
 	public void Clear()
 	{
 		Heap.Clear();

@@ -2,12 +2,14 @@ package gamecore.datastructures.queues;
 
 import java.util.NoSuchElementException;
 
+import gamecore.datastructures.ICollection;
+
 /**
  * A stack datastructure.
  * @author Dawn Nye
  * @param <T> The type to store in the stack.
  */
-public interface IStack<T> extends Iterable<T>
+public interface IStack<T> extends ICollection<T>
 {
 	/**
 	 * Pushes {@code t} onto the top of the stack.

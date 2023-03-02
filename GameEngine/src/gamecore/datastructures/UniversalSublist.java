@@ -14,7 +14,7 @@ import java.util.NoSuchElementException;
  * On another note, the behavior of a sublist becomes undefined if the original list makes a modification left (inclusive) of the endpoint of the sublist.
  * @author Dawn Nye
  */
-public final class UniversalSublist<T> implements List<T>
+public final class UniversalSublist<T> implements List<T>, ICollection<T>
 {
 	/**
 	 * Creates a sublist from {@code l}.
@@ -64,6 +64,24 @@ public final class UniversalSublist<T> implements List<T>
 		
 		return false;
 	}
+	
+	public boolean Add(T t)
+	{return add(t);}
+	
+	public boolean Remove(T t)
+	{return remove(t);}
+	
+	public boolean Contains(T t)
+	{return contains(t);}
+	
+	public void Clear()
+	{
+		clear();
+		return;
+	}
+	
+	public int Count()
+	{return size();}
 	
 	public boolean add(T e)
 	{

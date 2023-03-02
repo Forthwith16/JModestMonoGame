@@ -1,10 +1,12 @@
-package gamecore.datastructures;
+package gamecore.datastructures.trees;
 
 import java.lang.reflect.Array;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
+import gamecore.datastructures.CellRectangle;
+import gamecore.datastructures.LinkedList;
 import gamecore.datastructures.queues.PriorityQueue;
 import gamecore.datastructures.queues.Queue;
 import gamecore.datastructures.tuples.Pair;
@@ -53,22 +55,22 @@ public class AABBTree<T> implements Collection<T>
 	public boolean add(T e)
 	{
 		CellRectangle boundary = BoundingBoxExtractor.ExtractBoundary(e);
-
+		
 		// If we can't generate a valid boundary, we're done
 		if(boundary == null || boundary.IsDegenerate())
 			return false;
-
+		
 		// We'll always succeed now, so just increment it
 		Count++;
-
+		
 		if(Root == null)
 		{
 			Root = new Node(boundary,e);
 			return true;
 		}
-
+		
 		Node n = Root;
-
+		
 		while(!n.IsLeaf())
 		{
 			// Go toward the section that creates the smallest change in area
@@ -80,14 +82,14 @@ public class AABBTree<T> implements Collection<T>
 			else
 				n = n.Right;
 		}
-
+		
 		Node right = new Node(boundary,e);
 		Node parent = new Node(n.Parent,n,right);
-
+		
 		// This is a one time only edge case we have to catch
 		if(parent.IsRoot())
 			Root = parent;
-
+		
 		parent.LinkAdjacentNodes(n.IsRoot() || n.Parent.Right != n);
 		parent.UpdateProperties();
 

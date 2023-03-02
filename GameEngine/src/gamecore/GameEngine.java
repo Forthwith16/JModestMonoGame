@@ -503,7 +503,7 @@ public abstract class GameEngine implements Runnable
 	 * @return Returns true if a service was removed and false otherwise.
 	 */
 	public boolean RemoveService(Class type)
-	{return Services.Remove(type);}
+	{return Services.RemoveByKey(type);}
 	
 	/**
 	 * Removes all services from the game engine.

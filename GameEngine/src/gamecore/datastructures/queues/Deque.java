@@ -77,6 +77,18 @@ public class Deque<T> implements IDeque<T>
 	public T Dequeue()
 	{return PollFront();}
 	
+	/**
+	 * Adds {@code t} to the deque at the back, equivalent to calling {@code Enqueue} or {@code Push}.
+	 */
+	public boolean Add(T t)
+	{return Push(t);} // Enqueue and push do the same thing, so we'll just call this good
+
+	public boolean Remove(T t)
+	{return D.Remove(t);}
+
+	public boolean Contains(T t)
+	{return D.Contains(t);}
+	
 	public void Clear()
 	{
 		D.clear();

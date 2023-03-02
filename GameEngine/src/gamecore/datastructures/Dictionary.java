@@ -13,7 +13,7 @@ import gamecore.datastructures.tuples.KeyValuePair;
  * @param <K> The key type.
  * @param <V> The value type.
  */
-public class Dictionary<K,V> implements Iterable<KeyValuePair<K,V>>
+public class Dictionary<K,V> implements ICollection<KeyValuePair<K,V>>
 {
 	/**
 	 * Creates an empty dictionary.
@@ -55,7 +55,7 @@ public class Dictionary<K,V> implements Iterable<KeyValuePair<K,V>>
 		if(ret == null)
 			ret = new KeyValuePair<K,V>(key,value);
 		else
-			Remove(key);
+			RemoveByKey(key);
 		
 		Entries.add(new KeyValuePair<K,V>(key,value));
 		return ret.Item2;
@@ -101,6 +101,7 @@ public class Dictionary<K,V> implements Iterable<KeyValuePair<K,V>>
 	 * Gets the value associated with {@code key}.
 	 * @param key The key to search for.
 	 * @return Returns the value associated with {@code key}.
+	 * @throws NoSuchElementException Thrown if the key is not in the dictionary.
 	 */
 	public V Get(K key)
 	{
@@ -125,7 +126,7 @@ public class Dictionary<K,V> implements Iterable<KeyValuePair<K,V>>
 	 * @param key The key to remove.
 	 * @return Returns true if the key was removed and false otherwise.
 	 */
-	public boolean Remove(K key)
+	public boolean RemoveByKey(K key)
 	{return Entries.remove(new KeyValuePair<K,V>(key,null));}
 	
 	/**
@@ -171,6 +172,50 @@ public class Dictionary<K,V> implements Iterable<KeyValuePair<K,V>>
 		return false;
 	}
 	
+	public boolean Add(KeyValuePair<K,V> t)
+	{
+		// The null pointer exception comes from the key being null in Add
+		// If the proposed entry itself is null, we merely fail silently
+		if(t == null)
+			return false;
+		
+		return Add(t.Item1,t.Item2);
+	}
+	
+	/**
+	 * This will remove the key-value pair from this dictionary if both the key <i>and</i> value match exactly. 
+	 * @param t The key-value pair to search for.
+	 * @return Returns true if {@code t} was removed and false otherwise.
+	 */
+	public boolean Remove(KeyValuePair<K,V> t)
+	{
+		if(t == null)
+			return false;
+		
+		KeyValuePair<K,V> p = TryGet(t.Item1);
+		
+		if(p == null)
+			return false;
+		
+		if(p.Item2 == null ? t.Item2 == null : p.Item2.equals(t.Item2))
+			RemoveByKey(t.Item1);
+		
+		return false;
+	}
+	
+	public boolean Contains(KeyValuePair<K,V> t)
+	{
+		if(t == null)
+			return false;
+		
+		KeyValuePair<K,V> p = TryGet(t.Item1);
+		
+		if(p == null)
+			return false;
+		
+		return p.Item2 == null ? t.Item2 == null : p.Item2.equals(t.Item2);
+	}
+	
 	/**
 	 * Clears the dictionary of all entries.
 	 */
@@ -202,14 +247,26 @@ public class Dictionary<K,V> implements Iterable<KeyValuePair<K,V>>
 	 * @return Returns the keys in the dictionary. They are garunteed to appear in the same order as their values as obtained from Values.
 	 */
 	public Iterable<K> Keys()
-	{return new KeyIterable();}
+	{
+		return new Iterable<K>()
+		{
+			public Iterator<K> iterator()
+			{return new KeyIterator();}
+		};
+	}
 	
 	/**
 	 * Obtains the values in the dictionary.
 	 * @return Returns the values in the dictionary. They are garunteed to appear in the same order as their keys as obtained from Keys.
 	 */
 	public Iterable<V> Values()
-	{return new ValueIterable();}
+	{
+		return new Iterable<V>()
+		{
+			public Iterator<V> iterator()
+			{return new ValueIterator();}
+		};
+	}
 	
 	@Override public String toString()
 	{
@@ -225,19 +282,6 @@ public class Dictionary<K,V> implements Iterable<KeyValuePair<K,V>>
 	 * The backing data structure for the dictionary.
 	 */
 	protected HashTable<KeyValuePair<K,V>> Entries;
-	
-	/**
-	 * Used to set up a key iterator.
-	 * @author Dawn Nye
-	 */
-	protected class KeyIterable implements Iterable<K>
-	{
-		public KeyIterable()
-		{return;}
-		
-		public Iterator<K> iterator()
-		{return new KeyIterator();}
-	}
 	
 	/**
 	 * Iterates over the keys of a dictionary.
@@ -258,19 +302,6 @@ public class Dictionary<K,V> implements Iterable<KeyValuePair<K,V>>
 		{return Iter.next().Item1;}
 		
 		protected Iterator<KeyValuePair<K,V>> Iter;
-	}
-	
-	/**
-	 * Used to set up a value iterator.
-	 * @author Dawn Nye
-	 */
-	protected class ValueIterable implements Iterable<V>
-	{
-		public ValueIterable()
-		{return;}
-		
-		public Iterator<V> iterator()
-		{return new ValueIterator();}
 	}
 	
 	/**

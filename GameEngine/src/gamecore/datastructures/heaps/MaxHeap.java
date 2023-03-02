@@ -31,6 +31,9 @@ public class MaxHeap<T> implements IHeap<T>
 		return;
 	}
 	
+	public boolean Remove(T t)
+	{return Heap.Remove(t);}
+	
 	public boolean Add(T t)
 	{return Heap.Add(t);}
 	
@@ -48,6 +51,9 @@ public class MaxHeap<T> implements IHeap<T>
 	
 	public T Max()
 	{return Heap.Min();}
+	
+	public boolean Contains(T t)
+	{return Heap.Contains(t);}
 	
 	public void Clear()
 	{

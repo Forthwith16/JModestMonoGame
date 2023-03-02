@@ -178,7 +178,10 @@ public class MinHeap<T> implements IHeap<T>
 		PercolateDown(Root);
 		return ret;
 	}
-
+	
+	public boolean Remove(T t)
+	{throw new UnsupportedOperationException();}
+	
 	public boolean Add(T t)
 	{
 		if(Root == null)
@@ -223,7 +226,7 @@ public class MinHeap<T> implements IHeap<T>
 	}
 	
 	/**
-	 * Adds and returns a new node at the first available space in the head.
+	 * Adds and returns a new node at the first available space in the heap.
 	 * @param n The subheap root.
 	 * @param t The item to add.
 	 * @return Returns the new node created in the heap.
@@ -350,6 +353,21 @@ public class MinHeap<T> implements IHeap<T>
 			throw new NoSuchElementException();
 		
 		return Root.Item;
+	}
+	
+	public boolean Contains(T t)
+	{return RContains(Root,t);}
+	
+	protected boolean RContains(Node n, T t)
+	{
+		if(n == null)
+			return false;
+		
+		if(n.Item == null ? t == null : n.Item.equals(t))
+			return true;
+		
+		// We use <= here because the heap can have multiple items of the same priority
+		return Ordering.compare(n.Item,t) <= 0 && (RContains(n.Left,t) || RContains(n.Right,t));
 	}
 	
 	public void Clear()

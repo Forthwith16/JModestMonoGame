@@ -12,7 +12,7 @@ import java.util.NoSuchElementException;
  * @author Dawn Nye
  * @param <T> The type of values to store in the table.
  */
-public class HashTable<T> implements Collection<T>
+public class HashTable<T> implements Collection<T>, ICollection<T>
 {
 	/**
 	 * Creates an empty hash table.
@@ -139,6 +139,24 @@ public class HashTable<T> implements Collection<T>
 		l[hash].AddLast(t);
 		return;
 	}
+	
+	public boolean Add(T t)
+	{return add(t);}
+	
+	public boolean Remove(T t)
+	{return remove(t);}
+	
+	public boolean Contains(T t)
+	{return contains(t);}
+	
+	public void Clear()
+	{
+		clear();
+		return;
+	}
+	
+	public int Count()
+	{return size();}
 	
 	public boolean add(T t)
 	{

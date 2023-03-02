@@ -3,7 +3,6 @@ package gamecore.LINQ;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.NoSuchElementException;
 
 import gamecore.datastructures.tuples.Pair;
@@ -283,7 +282,22 @@ public final class LINQ
 	 * @return Returns an empty iterable object with type {@code T}.
 	 */
 	public static <T> Iterable<T> Empty()
-	{return new LinkedList<T>();}
+	{
+		return new Iterable<T>()
+		{
+			public Iterator<T> iterator()
+			{
+				return new Iterator<T>()
+				{
+					public boolean hasNext()
+					{return false;}
+					
+					public T next()
+					{throw new NoSuchElementException();}
+				};
+			}
+		};
+	}
 	
 	/**
 	 * Determines if {@code source} is empty.

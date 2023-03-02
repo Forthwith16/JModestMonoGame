@@ -190,7 +190,7 @@ public class InputManager implements IUpdatable
 	public boolean RemoveInput(String input, InputFunction func)
 	{
 		if(func == null)
-			return Inputs.Remove(input);
+			return Inputs.RemoveByKey(input);
 		
 		// If we don't have this input, we fail
 		if(!Inputs.ContainsKey(input))

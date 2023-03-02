@@ -39,6 +39,15 @@ public class Queue<T> implements IQueue<T>
 	public T Dequeue()
 	{return Q.RemoveFront();}
 	
+	public boolean Add(T t)
+	{return Enqueue(t);}
+
+	public boolean Remove(T t)
+	{return Q.Remove(t);}
+
+	public boolean Contains(T t)
+	{return Q.Contains(t);}
+	
 	public void Clear()
 	{
 		Q.clear();

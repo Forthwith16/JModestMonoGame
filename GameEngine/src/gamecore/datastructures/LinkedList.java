@@ -12,7 +12,7 @@ import java.util.NoSuchElementException;
  * The linked list possesses a dummy head and tail node.
  * @author Dawn Nye
  */
-public class LinkedList<T> implements List<T>
+public class LinkedList<T> implements List<T>, ICollection<T>
 {
 	/**
 	 * Creates an empty doubly linked list.
@@ -108,6 +108,24 @@ public class LinkedList<T> implements List<T>
 		
 		return n;
 	}
+	
+	public boolean Add(T t)
+	{return add(t);}
+	
+	public boolean Remove(T t)
+	{return remove(t);}
+	
+	public boolean Contains(T t)
+	{return contains(t);}
+	
+	public void Clear()
+	{
+		clear();
+		return;
+	}
+	
+	public int Count()
+	{return size();}
 	
 	public boolean add(T e)
 	{

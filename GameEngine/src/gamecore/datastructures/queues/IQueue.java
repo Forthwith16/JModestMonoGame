@@ -2,12 +2,14 @@ package gamecore.datastructures.queues;
 
 import java.util.NoSuchElementException;
 
+import gamecore.datastructures.ICollection;
+
 /**
  * A queue datastructure.
  * @author Dawn Nye
  * @param <T> The type of data stored in the queue.
  */
-public interface IQueue<T> extends Iterable<T>
+public interface IQueue<T> extends ICollection<T>
 {
 	/**
 	 * Adds {@code t} to the queue.

@@ -197,7 +197,7 @@ public class InputMap
 	 * @return Returns true if the binding was removed and false otherwise.
 	 */
 	public boolean RemoveBinding(String name)
-	{return map.Remove(name);}
+	{return map.RemoveByKey(name);}
 	
 	/**
 	 * Checks to see if the given binding exists.
