@@ -27,9 +27,7 @@ public class MultiImageComponent extends ImageComponent
 		Images = new ArrayList<Image>();
 		img = null;
 		
-		SelectedIndex = -2;
 		SetSelectedImage(-1);
-		
 		return;
 	}
 	
@@ -53,9 +51,7 @@ public class MultiImageComponent extends ImageComponent
 				Images.add(add);
 		}
 		
-		SelectedIndex = -1;
 		SetSelectedImage(Images.size() > 0 ? 0 : -1);
-		
 		return;
 	}
 	
@@ -72,9 +68,7 @@ public class MultiImageComponent extends ImageComponent
 		for(int i = 0;i < ss.Count();i++)
 			Images.add(ss.GetSprite(i));
 		
-		SelectedIndex = -1;
 		SetSelectedImage(Images.size() > 0 ? 0 : -1);
-		
 		return;
 	}
 	
@@ -91,9 +85,7 @@ public class MultiImageComponent extends ImageComponent
 		Images = new ArrayList<Image>(img.Images);
 		img = null;
 		
-		SelectedIndex = -2;
 		SetSelectedImage(-1);
-		
 		return;
 	}
 	
@@ -119,24 +111,6 @@ public class MultiImageComponent extends ImageComponent
 	 */
 	public int GetSelectedImage()
 	{return SelectedIndex;}
-	
-	/**
-	 * Shows the component's image.
-	 */
-	public void Show()
-	{
-		SetSelectedImage(SelectedIndex);
-		return;
-	}
-	
-	/**
-	 * Hides the component's image.
-	 */
-	public void Hide()
-	{
-		img = null;
-		return;
-	}
 	
 	/**
 	 * Adds an image to the component.

@@ -9,17 +9,53 @@ import gamecore.datastructures.ICollection;
  * An implementation of this interface may be a Cartesian tree, a segment tree, an AABB tree, or any other related data structure.
  * Whether the tree is self-balancing depends on the data structure it represents and the implementation.
  * The order of iteration for a tree depends on the implementation, but an in-order traversal is often the correct choice.
- * Duplicates may or may not be allowed by the implementing type.
  * @author Dawn Nye
  * @param <T> The type to store in the tree.
  */
 public interface ITree<T> extends ICollection<T>
 {
 	/**
+	 * Adds {@code t} to the tree.
+	 * @param t The item to add.
+	 * @return Returns true if the item was added and false otherwise.
+	 */
+	public boolean Add(T t);
+	
+	/**
+	 * Removes {@code t} from the tree.
+	 * @param t The item to remove.
+	 * @return Returns true if the item was removed and false otherwise.
+	 */
+	public boolean Remove(T t);
+	
+	/**
+	 * Determines if the tree contains {@code t}.
+	 * @param t The item to search for.
+	 * @return Returns true if the tree contains {@code t} and false otherwise.
+	 */
+	public boolean Contains(T t);
+	
+	/**
 	 * Obtains the data at the root of the tree.
 	 * @throws NoSuchElementException Thrown if the tree is empty.
 	 */
 	public T Root();
+	
+	/**
+	 * Clears the tree of all elements.
+	 */
+	public void Clear();
+	
+	/**
+	 * Determines the number of items in the tree.
+	 */
+	public int Count();
+	
+	/**
+	 * Determines if the tree is empty.
+	 * @return Returns true if the tree is empty and false otherwise.
+	 */
+	public boolean IsEmpty();
 	
 	/**
 	 * Performs a pre-order traversal of the tree.
@@ -45,6 +81,15 @@ public interface ITree<T> extends ICollection<T>
 	 * @throws UnsupportedOperationException Thrown if this tree is not a binary tree and has no alternative meaning assigned to an in-order traversal.
 	 */
 	public void InOrderTraversal(TraversalFunction<T> f);
+	
+	/**
+	 * Performs a reverse in-order traversal of the (binary) tree.
+	 * This visits the elements of the tree in descending order.
+	 * @param f The function to call when visiting each node.
+	 * @throws NullPointerException Thrown if {@code f} is null.
+	 * @throws UnsupportedOperationException Thrown if this tree is not a binary tree and has no alternative meaning assigned to a reverse in-order traversal.
+	 */
+	public void ReverseInOrderTraversal(TraversalFunction<T> f);
 	
 	/**
 	 * Performs a level-order traversal of the tree.

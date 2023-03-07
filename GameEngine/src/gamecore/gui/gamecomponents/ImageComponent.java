@@ -25,7 +25,9 @@ public class ImageComponent extends AffineComponent implements IDrawable
 	protected ImageComponent()
 	{
 		super();
+		
 		img = null;
+		Show = true;
 		
 		return;
 	}
@@ -43,6 +45,7 @@ public class ImageComponent extends AffineComponent implements IDrawable
 			throw new NullPointerException();
 		
 		img = LoadImage(path);
+		Show = true;
 		
 		if(img != null)
 			SetDimensionsToImage();
@@ -63,6 +66,7 @@ public class ImageComponent extends AffineComponent implements IDrawable
 			throw new NullPointerException();
 		
 		img = LoadImage(stream);
+		Show = true;
 		
 		if(img != null)
 			SetDimensionsToImage();
@@ -83,6 +87,7 @@ public class ImageComponent extends AffineComponent implements IDrawable
 			throw new NullPointerException();
 		
 		img = LoadImage(stream);
+		Show = true;
 		
 		if(img != null)
 			SetDimensionsToImage();
@@ -103,6 +108,7 @@ public class ImageComponent extends AffineComponent implements IDrawable
 			throw new NullPointerException();
 		
 		img = LoadImage(url);
+		Show = true;
 		
 		if(img != null)
 			SetDimensionsToImage();
@@ -119,6 +125,7 @@ public class ImageComponent extends AffineComponent implements IDrawable
 		super();
 		
 		this.img = img;
+		Show = true;
 		
 		if(this.img != null)
 			SetDimensionsToImage();
@@ -210,6 +217,30 @@ public class ImageComponent extends AffineComponent implements IDrawable
 		return null;
 	}
 	
+	/**
+	 * Shows the component's image.
+	 */
+	public void Show()
+	{
+		Show = true;
+		return;
+	}
+	
+	/**
+	 * Hides the component's image.
+	 */
+	public void Hide()
+	{
+		Show = false;
+		return;
+	}
+	
+	/**
+	 * Determines if this image component is currently visible.
+	 */
+	public boolean IsVisible()
+	{return Show;}
+	
 	public void Initialize()
 	{
 		Initialized = true;
@@ -270,7 +301,7 @@ public class ImageComponent extends AffineComponent implements IDrawable
 	
 	@Override public void paint(Graphics g)
 	{
-		if(img != null)
+		if(Show && img != null)
 			((Graphics2D)g).drawImage(img,GetTransformation(true),null);
 		
 		super.paint(g);
@@ -281,6 +312,11 @@ public class ImageComponent extends AffineComponent implements IDrawable
 	 * The image to draw.
 	 */
 	protected Image img;
+	
+	/**
+	 * If true, we should draw the image.
+	 */
+	protected boolean Show;
 	
 	/**
 	 * If true, this component is initialized.
