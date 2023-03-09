@@ -18,7 +18,7 @@ import gamecore.datastructures.tuples.Pair;
  * @author Dawn Nye
  * @param <T> The type of data stored in this AABB Tree.
  */
-public class AABBTree<T> implements Collection<T>
+public class AABBTree<T> implements ITree<T>, Collection<T>
 {
 	/**
 	 * Creates a new AABB tree.
@@ -95,6 +95,9 @@ public class AABBTree<T> implements Collection<T>
 
 		return true;
 	}
+	
+	public boolean Add(T t)
+	{return add(t);}
 	
 	public boolean addAll(Collection<? extends T> c)
 	{
@@ -181,6 +184,9 @@ public class AABBTree<T> implements Collection<T>
 		return true;
 	}
 	
+	public boolean Remove(T t)
+	{return remove(t);}
+	
 	public boolean removeAll(Collection<?> c)
 	{
 		boolean ret = false;
@@ -238,6 +244,9 @@ public class AABBTree<T> implements Collection<T>
 	public boolean contains(Object obj)
 	{return Find((T)obj) != null;}
 	
+	public boolean Contains(T t)
+	{return contains(t);}
+	
 	public boolean containsAll(Collection<?> c)
 	{
 		for(Object obj : c)
@@ -252,6 +261,12 @@ public class AABBTree<T> implements Collection<T>
 		Root = null;
 		Count = 0;
 		
+		return;
+	}
+	
+	public void Clear()
+	{
+		clear();
 		return;
 	}
 	
@@ -422,11 +437,25 @@ public class AABBTree<T> implements Collection<T>
 		return ret;
 	}
 	
+	public T Root()
+	{
+		if(IsEmpty())
+			throw new NoSuchElementException();
+		
+		return Root.Data;
+	}
+	
 	public int size()
 	{return Count;}
 	
+	public int Count()
+	{return size();}
+	
 	public boolean isEmpty()
 	{return size() == 0;}
+	
+	public boolean IsEmpty()
+	{return isEmpty();}
 	
 	public Iterator<T> iterator()
 	{return new NodeEnumerator(Root);}
@@ -454,6 +483,132 @@ public class AABBTree<T> implements Collection<T>
 			ret[size()] = null;
 		
 		return ret;
+	}
+	
+	public void PreOrderTraversal(TraversalFunction<T> f)
+	{
+		if(f == null)
+			throw new NullPointerException();
+		
+		PreOrderTraversal(f,Root,0,0);
+		return;
+	}
+	
+	/**
+	 * Performs a recursive pre-order traversal.
+	 * Returns the index of the next node to visit.
+	 */
+	protected int PreOrderTraversal(TraversalFunction<T> f, Node n, int index, int depth)
+	{
+		if(n == null)
+			return index;
+		
+		f.Visit(n.Data,index++,depth);
+		index = PreOrderTraversal(f,n.Left,index,depth + 1);
+		index = PreOrderTraversal(f,n.Right,index,depth + 1);
+		
+		return index;
+	}
+	
+	public void PostOrderTraversal(TraversalFunction<T> f)
+	{
+		if(f == null)
+			throw new NullPointerException();
+		
+		PostOrderTraversal(f,Root,0,0);
+		return;
+	}
+	
+	/**
+	 * Performs a recursive post-order traversal.
+	 * Returns the index of the next node to visit.
+	 */
+	protected int PostOrderTraversal(TraversalFunction<T> f, Node n, int index, int depth)
+	{
+		if(n == null)
+			return index;
+
+		index = PostOrderTraversal(f,n.Left,index,depth + 1);
+		index = PostOrderTraversal(f,n.Right,index,depth + 1);
+		f.Visit(n.Data,index++,depth);
+		
+		return index;
+	}
+	
+	public void InOrderTraversal(TraversalFunction<T> f)
+	{
+		if(f == null)
+			throw new NullPointerException();
+		
+		InOrderTraversal(f,Root,0,0);
+		return;
+	}
+	
+	/**
+	 * Performs a recursive in-order traversal.
+	 * Returns the index of the next node to visit.
+	 */
+	protected int InOrderTraversal(TraversalFunction<T> f, Node n, int index, int depth)
+	{
+		if(n == null)
+			return index;
+
+		index = InOrderTraversal(f,n.Left,index,depth + 1);
+		f.Visit(n.Data,index++,depth);
+		index = InOrderTraversal(f,n.Right,index,depth + 1);
+		
+		return index;
+	}
+	
+	public void ReverseInOrderTraversal(TraversalFunction<T> f)
+	{
+		if(f == null)
+			throw new NullPointerException();
+		
+		ReverseInOrderTraversal(f,Root,0,0);
+		return;
+	}
+	
+	/**
+	 * Performs a recursive reverse in-order traversal.
+	 * Returns the index of the next node to visit.
+	 */
+	protected int ReverseInOrderTraversal(TraversalFunction<T> f, Node n, int index, int depth)
+	{
+		if(n == null)
+			return index;
+
+		index = InOrderTraversal(f,n.Right,index,depth + 1);
+		f.Visit(n.Data,index++,depth);
+		index = InOrderTraversal(f,n.Left,index,depth + 1);
+		
+		return index;
+	}
+	
+	public void LevelOrderTraversal(TraversalFunction<T> f)
+	{
+		if(f == null)
+			throw new NullPointerException();
+		
+		Queue<Pair<Node,Integer>> Q = new Queue<Pair<Node,Integer>>();
+		Q.Enqueue(new Pair<Node,Integer>(Root,0));
+		
+		int index = 0;
+		
+		while(!Q.IsEmpty())
+		{
+			Pair<Node,Integer> p = Q.Dequeue();
+			
+			f.Visit(p.Item1.Data,index++,p.Item2);
+			
+			if(p.Item1.Left != null)
+				Q.Enqueue(new Pair<Node,Integer>(p.Item1.Left,p.Item2 + 1));
+			
+			if(p.Item1.Right != null)
+				Q.Enqueue(new Pair<Node,Integer>(p.Item1.Right,p.Item2 + 1));
+		}
+		
+		return;
 	}
 	
 	/**
