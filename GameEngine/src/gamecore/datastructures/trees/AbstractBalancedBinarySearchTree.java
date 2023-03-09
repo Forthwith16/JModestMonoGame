@@ -61,44 +61,42 @@ public abstract class AbstractBalancedBinarySearchTree<T,NODE extends AbstractBi
 		NODE ret = super.AddN(t);
 		
 		if(ret != null)
-			BalanceAdd(ret);
+			for(NODE n : BalanceAdd(ret))
+				PropogatePropertyAdd(n);
 		
 		return ret;
 	}
 	
 	/**
 	 * Balances the tree about the node {@code n}.
+	 * This version of the balance function is used for balancing after a node has been <i>added</i> to the tree.
 	 * @param n
 	 * This is the node added to the tree.
 	 * Its links will be fully initialized, and its neighbors links connect to it.
 	 * @implNote The most reasonable implementation of this method is usually recursive, so a liberal interpretation of 'adding {@code n}' to the tree is often necessary.
+	 * @return An iterable sequence of nodes representing the nodes whose parent or children changed during the balancing.
 	 */
-	protected abstract void BalanceAdd(NODE n);
+	protected abstract Iterable<NODE> BalanceAdd(NODE n);
 	
 	@Override protected NODE RemoveN(T t)
 	{
 		NODE ret = super.RemoveN(t);
 		
 		if(ret != null) // If ret is the root, the boolean has no meaning, so just go with false
-			BalanceRemove(ret,ret.IsRoot() ? false : (Comparer.compare(ret.Data,ret.Parent.Data) < 0 ? true : false));
+			for(NODE n : BalanceRemove(ret))
+				PropogatePropertyRemove(n);
 		
 		return ret;
 	}
 	
 	/**
 	 * Balances the tree about the node {@code n}.
+	 * This version of the balance function is used for balancing after a node has been <i>removed</i> from the tree.
 	 * @param n
 	 * This is the node removed from the tree.
 	 * Its links will be intact (but what it was once linked to will have forgotten it).
-	 * @param was_left_child
-	 * If true, then {@code n} was the left child of its parent.
-	 * If false, it was the right child.
-	 * However, if the {@code n} was the root, then this value has no meaning.
-	 * We provide this information merely for convenience instead of having to recompute it.
 	 * @implNote The most reasonable implementation of this method is usually recursive, so a liberal interpretation of having 'removed {@code n}' from the tree is often necessary.
-	 * @implNote
-	 * Some of {@code n}'s helper methods such as {@code GetSibling()} require {@code n} to be properly linked into the tree.
-	 * Because this is not the case here, be careful to use their alternatives (i.e. {@code GetSibling(boolean)}) which provide {@code was_last_child} to permit the computation.
+	 * @return An iterable sequence of nodes representing the nodes whose parent or children changed during the balancing.
 	 */
-	protected abstract void BalanceRemove(NODE n, boolean was_left_child);
+	protected abstract Iterable<NODE> BalanceRemove(NODE n);
 }

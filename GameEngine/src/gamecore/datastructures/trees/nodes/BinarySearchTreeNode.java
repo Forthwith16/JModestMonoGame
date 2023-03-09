@@ -3,6 +3,7 @@ package gamecore.datastructures.trees.nodes;
 /**
  * The node of an ordinary binary search tree.
  * @author Dawn Nye
+ * @param <T> The type to store in the tree.
  */
 public class BinarySearchTreeNode<T> extends AbstractBinaryTreeNode<T,BinarySearchTreeNode<T>>
 {

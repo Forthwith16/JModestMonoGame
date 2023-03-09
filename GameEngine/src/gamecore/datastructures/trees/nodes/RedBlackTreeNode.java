@@ -1,10 +1,11 @@
 package gamecore.datastructures.trees.nodes;
 
 /**
- * The node of a red-black tree.
+ * A concrete red black tree node.
  * @author Dawn Nye
+ * @param <T> The type to store in the node as data.
  */
-public class RedBlackTreeNode<T> extends AbstractBinaryTreeNode<T,RedBlackTreeNode<T>>
+public class RedBlackTreeNode<T> extends AbstractRedBlackTreeNode<T,RedBlackTreeNode<T>>
 {
 	/**
 	 * Creates a node with the given children and parent.
@@ -17,49 +18,7 @@ public class RedBlackTreeNode<T> extends AbstractBinaryTreeNode<T,RedBlackTreeNo
 	 */
 	public RedBlackTreeNode(T data, RedBlackTreeNode<T> parent, RedBlackTreeNode<T> left, RedBlackTreeNode<T> right, boolean is_left_child, boolean color)
 	{
-		super(data,parent,left,right,is_left_child);
-		
-		Color = color;
+		super(data,parent,left,right,is_left_child,color);
 		return;
 	}
-	
-	/**
-	 * Makes this into a black node.
-	 */
-	public void MakeBlack()
-	{
-		Color = true;
-		return;
-	}
-	
-	/**
-	 * Makes this into a red node.
-	 */
-	public void MakeRed()
-	{
-		Color = false;
-		return;
-	}
-	
-	/**
-	 * Determines if this is a black node.
-	 */
-	public boolean IsBlack()
-	{return Color;}
-	
-	/**
-	 * Determines if this is a red node.
-	 */
-	public boolean IsRed()
-	{return !Color;}
-	
-	@Override public String toString()
-	{return "Data: " + (Data != null ? Data.toString() : "null") + "\nParent: " + Parent.Data.toString() + "\nLeft: " + (Left != null ? (Left.Data != null ? Left.Data.toString() : "null entry") : "null") + "\nRight: " + (Right != null ? (Right.Data != null ? Right.Data.toString() : "null entry") : "null") + "\nColor: " + (Color ? "Black" : "Red");}
-	
-	/**
-	 * The color of the node.
-	 * If true, the node is black.
-	 * If false, the ndoe is red.
-	 */
-	private boolean Color;
 }

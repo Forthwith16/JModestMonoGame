@@ -84,22 +84,32 @@ public abstract class AbstractBinarySearchTree<T,NODE extends AbstractBinaryTree
 			if(result == 0)
 				return null;
 			else if(result < 0)
-				if(!n.HasLeftChild())
+				if(n.HasLeftChild())
+					n = n.Left();
+				else
 				{
 					Count++;
 					return CreateNode(t,n,null,null,true);
 				}
-				else
-					n = n.Left;
 			else // An else if, but formatting this way make it clear what's going on
-				if(!n.HasRightChild())
+				if(n.HasRightChild())
+					n = n.Right();
+				else
 				{
 					Count++;
 					return CreateNode(t,n,null,null,false);
 				}
-				else
-					n = n.Right;
 		}
+	}
+	
+	@Override public boolean Remove(T t)
+	{
+		NODE n = RemoveN(t);
+		
+		if(n != null)
+			PropogatePropertyRemove(n);
+		
+		return n != null;
 	}
 	
 	@Override protected NODE RemoveN(T t)
@@ -115,9 +125,9 @@ public abstract class AbstractBinarySearchTree<T,NODE extends AbstractBinaryTree
 					Root = null; // If this is the root, just destroy it
 				else // Figure out which child this is
 					if(n.IsLeftChild())
-						n.Parent.Left = null;
+						n.Parent().StitchLeftChild(null);
 					else
-						n.Parent.Right = null;
+						n.Parent().StitchRightChild(null);
 				
 				Count--;
 				return n;
@@ -126,20 +136,13 @@ public abstract class AbstractBinarySearchTree<T,NODE extends AbstractBinaryTree
 			{
 				if(n.IsRoot())
 				{
-					Root = n.Left;
-					Root.Parent = Root;
+					Root = n.Left();
+					Root.MakeRoot();
 				}
+				else if(n.IsLeftChild()) // The parent of n becomes the parent of the child
+					n.Parent().StitchLeftChild(n.Left());
 				else
-				{
-					// The parent of n becomes the parent of the child
-					n.Left.Parent = n.Parent;
-					
-					// Figure out which child n is
-					if(n.IsLeftChild())
-						n.Parent.Left = n.Left;
-					else
-						n.Parent.Right = n.Left;
-				}
+					n.Parent().StitchRightChild(n.Left());
 				
 				Count--;
 				return n;
@@ -148,20 +151,13 @@ public abstract class AbstractBinarySearchTree<T,NODE extends AbstractBinaryTree
 			{
 				if(n.IsRoot())
 				{
-					Root = n.Right;
-					Root.Parent = Root;
+					Root = n.Right();
+					Root.MakeRoot();
 				}
+				else if(n.IsLeftChild()) // The parent of n becomes the parent of the child
+					n.Parent().StitchLeftChild(n.Right());
 				else
-				{
-					// The parent of n becomes the parent of the child
-					n.Right.Parent = n.Parent;
-					
-					// Figure out which child n is
-					if(n.Parent.Left == n)
-						n.Parent.Left = n.Right;
-					else
-						n.Parent.Right = n.Right;
-				}
+					n.Parent().StitchRightChild(n.Right());
 				
 				Count--;
 				return n;
@@ -170,8 +166,11 @@ public abstract class AbstractBinarySearchTree<T,NODE extends AbstractBinaryTree
 			{
 				NODE next = n.FindNextNode();
 				
-				// We don't care about losing our node data because we perform not comparisons after the initial find
-				n.Data = next.Data;
+				// We'll clobber the removed node's data so that we can retain its positional information
+				SwapNodeContents(n,next);
+				
+				// We want to maintain a property on the node we just swapped
+				PropogatePropertyRemove(n);
 				
 				// We can skip all the way ahead, since we know this is the next problem node
 				n = next;
@@ -200,15 +199,15 @@ public abstract class AbstractBinarySearchTree<T,NODE extends AbstractBinaryTree
 			if(result == 0)
 				return n;
 			else if(result < 0)
-				if(n.Left == null)
-					return null;
+				if(n.HasLeftChild())
+					n = n.Left();
 				else
-					n = n.Left;
+					return null;
 			else // An else if, but formatting this way make it clear what's going on
-				if(n.Right == null)
-					return null;
+				if(n.HasRightChild())
+					n = n.Right();
 				else
-					n = n.Right;
+					return null;
 		}
 	}
 	

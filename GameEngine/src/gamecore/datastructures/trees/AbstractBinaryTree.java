@@ -1,5 +1,6 @@
 package gamecore.datastructures.trees;
 
+import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
@@ -7,6 +8,7 @@ import gamecore.datastructures.queues.Queue;
 import gamecore.datastructures.queues.Stack;
 import gamecore.datastructures.trees.nodes.AbstractBinaryTreeNode;
 import gamecore.datastructures.tuples.Pair;
+
 
 /**
  * An abstract binary tree.
@@ -75,7 +77,14 @@ public abstract class AbstractBinaryTree<T,NODE extends AbstractBinaryTreeNode<T
 	protected abstract NODE CreateNode(T data, NODE parent, NODE left, NODE right, boolean is_left_child);
 	
 	public boolean Add(T t)
-	{return AddN(t) != null;}
+	{
+		NODE n = AddN(t);
+		
+		if(n != null)
+			PropogatePropertyAdd(n);
+		
+		return n != null;
+	}
 	
 	/**
 	 * Adds {@code t} to the tree.
@@ -108,24 +117,62 @@ public abstract class AbstractBinaryTree<T,NODE extends AbstractBinaryTreeNode<T
 			prev = cur;
 			
 			if((Count & mask) > 0)
-				cur = cur.Right;
+				cur = cur.Right();
 			else
-				cur = cur.Left;
+				cur = cur.Left();
 			
 			mask >>= 1;
 		}
 		
-		// We now have cur == null and prev contains its parent
-		// We can get the last instruction out of Count just by checking if it's even or odd
-		if((Count & 0b1) == 0) // Even cases are left children
-			return CreateNode(t,prev,null,null,true);
-		
-		// Odd cases a right children
-		return CreateNode(t,prev,null,null,false);
+		// Even cases are left children; odd cases are right children
+		return CreateNode(t,prev,null,null,(Count & 0b1) == 0);
 	}
 	
+	/**
+	 * Propogates a binary tree property starting from {@code n}.
+	 * This version of propogation is used after a node has been <i>added</i>.
+	 * @param n The node to start propogating a property from. This does nothing if {@code n} is null.
+	 */
+	protected void PropogatePropertyAdd(NODE n)
+	{
+		if(n == null)
+			return;
+		
+		for(PropogationDirection dir : MaintainPropertyAdd(n))
+			switch(dir)
+			{
+			case PARENT:
+				PropogatePropertyAdd(n.Parent());
+				break;
+			case LEFT:
+				PropogatePropertyAdd(n.Left());
+				break;
+			case RIGHT:
+				PropogatePropertyAdd(n.Right());
+				break;
+			}
+		
+		return;
+	}
+	
+	/**
+	 * Maintains some additional structural property of the binary tree.
+	 * This version of this maintenance function is used for when a node has been <i>added</i> to the tree.
+	 * @param n The node that was added or an ancestor of it as the property is propogated up the tree.
+	 * @return Returns a set of enum flags specifying which directions the property must be propogated to be true everywhere. If this value is empty, then there is nothing left to do.
+	 */
+	protected EnumSet<PropogationDirection> MaintainPropertyAdd(NODE n)
+	{return EnumSet.noneOf(PropogationDirection.class);}
+	
 	public boolean Remove(T t)
-	{return RemoveN(t) != null;}
+	{
+		NODE n = RemoveN(t);
+		
+		if(n != null)
+			PropogatePropertyRemove(n);
+		
+		return n != null;
+	}
 	
 	/**
 	 * Removes {@code t} from the tree.
@@ -142,16 +189,13 @@ public abstract class AbstractBinaryTree<T,NODE extends AbstractBinaryTreeNode<T
 		// We'll swap the data we want to remove with a garbage node
 		NODE last = FindLastNode(Root);
 		
-		// We'll preserve the data just in case rem.Data is merely .equal to t
-		// We do this because we're returning the node we remove
-		T temp = rem.Data;
-		rem.Data = last.Data;
-		last.Data = temp;
+		// We'll preserve the data just in case
+		SwapNodeContents(rem,last);
 		
 		if(last.IsLeftChild())
-			last.Parent.Left = null;
+			last.Parent().StitchLeftChild(null);
 		else
-			last.Parent.Right = null;
+			last.Parent().StitchRightChild(null);
 		
 		// It's very important we do this after we find the last node, or else we'll get lost
 		Count--;
@@ -160,8 +204,48 @@ public abstract class AbstractBinaryTree<T,NODE extends AbstractBinaryTreeNode<T
 		if(Count == 0)
 			Root = null;
 		
+		// If we have a property to maintain with the node we modified but didn't remove, do so
+		if(rem != last)
+			PropogatePropertyRemove(rem);
+		
 		return last;
 	}
+	
+	/**
+	 * Propogates a binary tree property starting from {@code n}.
+	 * This version of propogation is used after a node has been <i>removed</i>.
+	 * @param n The node to start propogating a property from. This may initially be the removed node after it has already been removed from the tree. This does nothing if {@code n} is null.
+	 */
+	protected void PropogatePropertyRemove(NODE n)
+	{
+		if(n == null)
+			return;
+		
+		for(PropogationDirection dir : MaintainPropertyRemove(n))
+			switch(dir)
+			{
+			case PARENT:
+				PropogatePropertyRemove(n.Parent());
+				break;
+			case LEFT:
+				PropogatePropertyRemove(n.Left());
+				break;
+			case RIGHT:
+				PropogatePropertyRemove(n.Right());
+				break;
+			}
+		
+		return;
+	}
+	
+	/**
+	 * Maintains some additional structural property of the binary tree.
+	 * This version of this maintenance function is used for when a node has been <i>removed</i> from the tree.
+	 * @param n The node that was removed (and hence is no longer part of the tree) or some other node reached via propogation through the tree.
+	 * @return Returns a set of enum flags specifying which directions the property must be propogated to be true everywhere. If this value is empty, then there is nothing left to do.
+	 */
+	protected EnumSet<PropogationDirection> MaintainPropertyRemove(NODE n)
+	{return EnumSet.noneOf(PropogationDirection.class);}
 	
 	/**
 	 * Finds a node containing {@code t}.
@@ -177,12 +261,12 @@ public abstract class AbstractBinaryTree<T,NODE extends AbstractBinaryTreeNode<T
 		if(n.Data == null ? t == null : n.Data.equals(t))
 			return n;
 		
-		NODE ret = Find(n.Left,t);
+		NODE ret = Find(n.Left(),t);
 		
 		if(ret != null)
 			return ret;
 		
-		return Find(n.Right,t);
+		return Find(n.Right(),t);
 	}
 	
 	/**
@@ -205,14 +289,27 @@ public abstract class AbstractBinaryTree<T,NODE extends AbstractBinaryTreeNode<T
 		while(mask > 0)
 		{
 			if((Count & mask) > 0)
-				cur = cur.Right;
+				cur = cur.Right();
 			else
-				cur = cur.Left;
+				cur = cur.Left();
 			
 			mask >>= 1;
 		}
 		
 		return cur;
+	}
+	
+	/**
+	 * Swaps the contents of two nodes.
+	 * This includes at least the data of the nodes but may also include other properties of the nodes accompanying that data.
+	 */
+	protected void SwapNodeContents(NODE n1, NODE n2)
+	{
+		T temp = n1.Data;
+		n1.Data = n2.Data;
+		n2.Data = temp;
+		
+		return;
 	}
 	
 	public boolean Contains(T t)
@@ -261,11 +358,11 @@ public abstract class AbstractBinaryTree<T,NODE extends AbstractBinaryTreeNode<T
 			f.Visit(p.Item1.Data,index++,p.Item2);
 			
 			// Now visit the children (push right first so we visit it second)
-			if(p.Item1.Right != null)
-				S.Push(new Pair<NODE,Integer>(p.Item1.Right,p.Item2 + 1));
+			if(p.Item1.HasRightChild())
+				S.Push(new Pair<NODE,Integer>(p.Item1.Right(),p.Item2 + 1));
 			
-			if(p.Item1.Left != null)
-				S.Push(new Pair<NODE,Integer>(p.Item1.Left,p.Item2 + 1));
+			if(p.Item1.HasLeftChild())
+				S.Push(new Pair<NODE,Integer>(p.Item1.Left(),p.Item2 + 1));
 		}
 		
 		return;
@@ -297,8 +394,8 @@ public abstract class AbstractBinaryTree<T,NODE extends AbstractBinaryTreeNode<T
 			return index;
 		
 		// Visit the children first
-		index = RPostOrderTraversal(f,n.Left,index,depth + 1);
-		index = RPostOrderTraversal(f,n.Right,index,depth + 1);
+		index = RPostOrderTraversal(f,n.Left(),index,depth + 1);
+		index = RPostOrderTraversal(f,n.Right(),index,depth + 1);
 		
 		// Now visit this node
 		f.Visit(n.Data,index,depth);
@@ -333,13 +430,13 @@ public abstract class AbstractBinaryTree<T,NODE extends AbstractBinaryTreeNode<T
 			return index;
 		
 		// Visit the left child first
-		index = RInOrderTraversal(f,n.Left,index,depth + 1);
+		index = RInOrderTraversal(f,n.Left(),index,depth + 1);
 		
 		// Now visit this node
 		f.Visit(n.Data,index++,depth);
 		
 		// Lastly, visit the right child
-		return RInOrderTraversal(f,n.Right,index,depth + 1);
+		return RInOrderTraversal(f,n.Right(),index,depth + 1);
 	}
 	
 	public void ReverseInOrderTraversal(TraversalFunction<T> f)
@@ -368,13 +465,13 @@ public abstract class AbstractBinaryTree<T,NODE extends AbstractBinaryTreeNode<T
 			return index;
 		
 		// Visit the right child first
-		index = ReverseRInOrderTraversal(f,n.Right,index,depth + 1);
+		index = ReverseRInOrderTraversal(f,n.Right(),index,depth + 1);
 		
 		// Now visit this node
 		f.Visit(n.Data,index++,depth);
 		
 		// Lastly, visit the left child
-		return ReverseRInOrderTraversal(f,n.Left,index,depth + 1);
+		return ReverseRInOrderTraversal(f,n.Left(),index,depth + 1);
 	}
 	
 	public void LevelOrderTraversal(TraversalFunction<T> f)
@@ -398,11 +495,11 @@ public abstract class AbstractBinaryTree<T,NODE extends AbstractBinaryTreeNode<T
 			f.Visit(p.Item1.Data,index++,p.Item2);
 			
 			// Now visit the children
-			if(p.Item1.Left != null)
-				S.Enqueue(new Pair<NODE,Integer>(p.Item1.Left,p.Item2 + 1));
+			if(p.Item1.HasLeftChild())
+				S.Enqueue(new Pair<NODE,Integer>(p.Item1.Left(),p.Item2 + 1));
 			
-			if(p.Item1.Right != null)
-				S.Enqueue(new Pair<NODE,Integer>(p.Item1.Right,p.Item2 + 1));
+			if(p.Item1.HasRightChild())
+				S.Enqueue(new Pair<NODE,Integer>(p.Item1.Right(),p.Item2 + 1));
 		}
 		
 		return;
@@ -425,7 +522,7 @@ public abstract class AbstractBinaryTree<T,NODE extends AbstractBinaryTreeNode<T
 					n = Root;
 					
 					while(n.HasLeftChild())
-						n = n.Left;
+						n = n.Left();
 					
 					return true;
 				}
@@ -494,4 +591,15 @@ public abstract class AbstractBinaryTree<T,NODE extends AbstractBinaryTreeNode<T
 	 * It's a lot easier to make {@code toString} do its job if we have this.
 	 */
 	protected String MyToStringString = null;
+	
+	/**
+	 * Represents the required direction of propogation for a property in a binary tree to be maintained.
+	 * @author Dawn Nye
+	 */
+	protected static enum PropogationDirection
+	{
+		PARENT,
+		LEFT,
+		RIGHT
+	}
 }
