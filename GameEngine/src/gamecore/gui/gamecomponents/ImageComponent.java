@@ -299,6 +299,34 @@ public class ImageComponent extends AffineComponent implements IDrawable
 		return;
 	}
 	
+	/**
+	 * Gets the width of the displayed image.
+	 * @return Returns the width of the displayed image.
+	 * @throws IllegalStateException Thrown if there is no displayed image.
+	 * @implNote An image hidden via {@code Hide} does not cause this to throw an {@code IllegalStateException}.
+	 */
+	public int GetImageWidth()
+	{
+		if(img == null)
+			throw new IllegalStateException();
+		
+		return img.getWidth(null);
+	}
+	
+	/**
+	 * Gets the height of the displayed image.
+	 * @return Returns the height of the displayed image.
+	 * @throws IllegalStateException Thrown if there is no displayed image.
+	 * @implNote An image hidden via {@code Hide} does not cause this to throw an {@code IllegalStateException}.
+	 */
+	public int GetImageHeight()
+	{
+		if(img == null)
+			throw new IllegalStateException();
+		
+		return img.getHeight(null);
+	}
+	
 	@Override public void paint(Graphics g)
 	{
 		if(Show && img != null)

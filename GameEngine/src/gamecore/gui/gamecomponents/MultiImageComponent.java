@@ -288,6 +288,33 @@ public class MultiImageComponent extends ImageComponent
 	}
 	
 	/**
+	 * Gets the width of the displayed image.
+	 * @return Returns the width of the displayed image or -1 if no image is currently being displayed.
+	 * @implNote An image hidden via {@code Hide} does not cause this to return -1.
+	 */
+	@Override public int GetImageWidth()
+	{
+		if(img == null)
+			return -1;
+		
+		return img.getWidth(null);
+	}
+	
+	/**
+	 * Gets the height of the displayed image.
+	 * @return Returns the height of the displayed image or -1 if no image is currently being displayed.
+	 * @throws IllegalStateException Thrown if there is no displayed image.
+	 * @implNote An image hidden via {@code Hide} does not cause this to return -1.
+	 */
+	@Override public int GetImageHeight()
+	{
+		if(img == null)
+			return -1;
+		
+		return img.getHeight(null);
+	}
+	
+	/**
 	 * The images we can display.
 	 */
 	protected ArrayList<Image> Images;
