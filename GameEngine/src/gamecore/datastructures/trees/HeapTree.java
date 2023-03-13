@@ -7,7 +7,12 @@ import java.util.NoSuchElementException;
 import gamecore.datastructures.heaps.IHeap;
 import gamecore.datastructures.trees.nodes.CompleteBinaryTreeNode;
 
-
+/**
+ * Creates a tree-hierarchy heap backed by a complete binary tree.
+ * The iteration order is still an in-order traversal and as such does not produce its contents in the order they would be removed from the heap. 
+ * @author Dawn Nye
+ * @param <T> The type to store in the heap.
+ */
 public class HeapTree<T> extends CompleteBinaryTree<T> implements IHeap<T>
 {
 	/**
