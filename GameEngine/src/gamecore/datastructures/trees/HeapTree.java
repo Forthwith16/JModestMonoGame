@@ -2,9 +2,7 @@ package gamecore.datastructures.trees;
 
 import java.util.Comparator;
 import java.util.EnumSet;
-import java.util.NoSuchElementException;
 
-import gamecore.datastructures.heaps.IHeap;
 import gamecore.datastructures.trees.nodes.CompleteBinaryTreeNode;
 
 /**
@@ -13,7 +11,7 @@ import gamecore.datastructures.trees.nodes.CompleteBinaryTreeNode;
  * @author Dawn Nye
  * @param <T> The type to store in the heap.
  */
-public class HeapTree<T> extends CompleteBinaryTree<T> implements IHeap<T>
+public class HeapTree<T> extends CompleteBinaryTree<T>
 {
 	/**
 	 * Creates an empty heap.
@@ -42,8 +40,8 @@ public class HeapTree<T> extends CompleteBinaryTree<T> implements IHeap<T>
 	 */
 	public HeapTree(Iterable<? extends T> seed, Comparator<T> cmp)
 	{
-		super(seed); // Since we just slam the nodes into place, this will build the initial tree in linear time
-
+		super(seed);
+		
 		if(cmp == null)
 			throw new NullPointerException();
 		
@@ -76,32 +74,6 @@ public class HeapTree<T> extends CompleteBinaryTree<T> implements IHeap<T>
 		PropogatePropertyRemove(n); // Since EnablePropogation is still false as this point, we can use the MaintainPropertyRemove function to prercolate down
 		return;
 	}
-	
-	public boolean AddAll(Iterable<? extends T> c)
-	{
-		if(c == null)
-			throw new NullPointerException();
-		
-		boolean ret = false;
-		
-		for(T t : c)
-			ret |= Add(t);
-		
-		return ret;
-	}
-
-	public T RemoveTop()
-	{
-		if(IsEmpty())
-			throw new NoSuchElementException();
-		
-		T ret = Top();
-		Remove(ret);
-		return ret;
-	}
-
-	public T Top()
-	{return Root();}
 	
 	@Override protected EnumSet<PropogationDirection> MaintainPropertyAdd(CompleteBinaryTreeNode<T> n)
 	{

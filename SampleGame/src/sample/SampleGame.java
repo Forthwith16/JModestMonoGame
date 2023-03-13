@@ -111,7 +111,7 @@ public class SampleGame extends GameEngine
 			Koopa.Translate(delta_p.Normalized().Multiply(speed));
 		
 		if(Input.GracelessInputSatisfied("Click"))
-			Koopa.Translate(MouseStateMonitor.GetState().GetPosition().Subtract(Koopa.GetPosition()));
+			Koopa.Translate(MouseStateMonitor.GetState().GetPosition().Subtract(Koopa.GetPosition(true)));
 		
 		return;
 	}
