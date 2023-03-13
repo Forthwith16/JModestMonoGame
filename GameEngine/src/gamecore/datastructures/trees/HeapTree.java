@@ -31,11 +31,11 @@ public class HeapTree<T> extends CompleteBinaryTree<T> implements IHeap<T>
 	/**
 	 * Creates a heap initially populated with {@code seed}.
 	 * The heap will be built in linear time.
-	 * @param cmp The comparator used to sort the heap. The heap will place the smallest item at the top.
 	 * @param seed The initial values to palce in the heap.
+	 * @param cmp The comparator used to sort the heap. The heap will place the smallest item at the top.
 	 * @throws NullPointerException Thrown if {@code cmp} or {@code seed} is null.
 	 */
-	protected HeapTree(Comparator<T> cmp, Iterable<? extends T> seed)
+	public HeapTree(Iterable<? extends T> seed, Comparator<T> cmp)
 	{
 		super(seed); // Since we just slam the nodes into place, this will build the initial tree in linear time
 

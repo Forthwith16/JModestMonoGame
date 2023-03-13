@@ -16,7 +16,7 @@ public class CompleteBinaryTree<T> extends AbstractBinaryTree<T,CompleteBinaryTr
 	/**
 	 * Creates an empty binary tree.
 	 */
-	protected CompleteBinaryTree()
+	public CompleteBinaryTree()
 	{
 		super();
 		return;
@@ -27,7 +27,7 @@ public class CompleteBinaryTree<T> extends AbstractBinaryTree<T,CompleteBinaryTr
 	 * @param seed The initial values to palce in the tree. They will be added to the tree one by one in the order they appear.
 	 * @throws NullPointerException Thrown if {@code seed} is null.
 	 */
-	protected CompleteBinaryTree(Iterable<? extends T> seed)
+	public CompleteBinaryTree(Iterable<? extends T> seed)
 	{
 		super(seed);
 		return;

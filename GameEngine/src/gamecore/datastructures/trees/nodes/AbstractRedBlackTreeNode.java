@@ -19,7 +19,7 @@ public abstract class AbstractRedBlackTreeNode<T,ME extends AbstractRedBlackTree
 	 * @param is_left_child If true, then this is a left child. If false, then this is right child. This value is ignored if this node is a root.
 	 * @param color If true, this will be a black node. If false, this will be a red node.
 	 */
-	public AbstractRedBlackTreeNode(T data, ME parent, ME left, ME right, boolean is_left_child, boolean color)
+	protected AbstractRedBlackTreeNode(T data, ME parent, ME left, ME right, boolean is_left_child, boolean color)
 	{
 		super(data,parent,left,right,is_left_child);
 		
