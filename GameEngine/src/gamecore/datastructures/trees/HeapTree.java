@@ -2,9 +2,7 @@ package gamecore.datastructures.trees;
 
 import java.util.Comparator;
 import java.util.EnumSet;
-import java.util.Iterator;
 
-import gamecore.datastructures.queues.Queue;
 import gamecore.datastructures.trees.nodes.CompleteBinaryTreeNode;
 
 /**
@@ -42,54 +40,17 @@ public class HeapTree<T> extends CompleteBinaryTree<T>
 	 */
 	public HeapTree(Iterable<? extends T> seed, Comparator<T> cmp)
 	{
-		super();
+		super(seed);
 		
-		if(seed == null || cmp == null)
+		if(cmp == null)
 			throw new NullPointerException();
 		
 		Comparer = (n1,n2) -> cmp.compare(n1.Data,n2.Data);
-		
-		// We can't just slam the nodes into place with add and then heapify since that will take n log n time
-		// We'll initially build the tree via a level-order traversal
-		BuildTreeFast(seed.iterator());
-		System.out.println(this);
 		
 		if(!IsEmpty())
 			FastHeapify(Root);
 		
 		EnablePercolation = true;
-		return;
-	}
-	
-	/**
-	 * Builds a tree in linear time.
-	 * @param seed The items to put into the tree.
-	 */
-	protected void BuildTreeFast(Iterator<? extends T> seed)
-	{
-		if(seed == null || !seed.hasNext())
-			return;
-		
-		Queue<CompleteBinaryTreeNode<T>> Q = new Queue<CompleteBinaryTreeNode<T>>();
-		Root = new CompleteBinaryTreeNode<T>(seed.next(),null,null,null,false);
-		Count++;
-		
-		Q.Enqueue(Root);
-		
-		while(seed.hasNext())
-		{
-			CompleteBinaryTreeNode<T> n = Q.Dequeue();
-			
-			Q.Enqueue(new CompleteBinaryTreeNode<T>(seed.next(),n,null,null,true));
-			Count++;
-			
-			if(seed.hasNext())
-			{
-				Q.Enqueue(new CompleteBinaryTreeNode<T>(seed.next(),n,null,null,false));
-				Count++;
-			}
-		}
-		
 		return;
 	}
 	
