@@ -288,7 +288,7 @@ public class FixedSizeGrid<T> implements IGrid<Vector2i,T>
 	
 	public boolean Clear()
 	{
-		grid = (Pair<T,Boolean>[][])new Object[Width][Height];
+		grid = (Pair<T,Boolean>[][])new Pair[Width][Height];
 		Count = 0;
 		
 		return true;

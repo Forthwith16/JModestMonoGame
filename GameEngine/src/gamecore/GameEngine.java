@@ -479,6 +479,8 @@ public abstract class GameEngine implements Runnable
 		}
 		
 		GameComponents.clear();
+		Window.ClearComponents();
+		
 		return;
 	}
 	

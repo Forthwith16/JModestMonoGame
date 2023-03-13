@@ -353,4 +353,13 @@ public class AbsoluteFrame extends JFrame
 		getContentPane().remove(index);
 		return;
 	}
+	
+	/**
+	 * Removes all components from this frame.
+	 */
+	public void ClearComponents()
+	{
+		getContentPane().removeAll();
+		return;
+	}
 }
