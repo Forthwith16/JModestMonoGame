@@ -290,6 +290,8 @@ public abstract class GameEngine implements Runnable
 		if(component instanceof Component)
 			Window.AddComponentFrameBounded((Component)component);
 		
+		component.OnAdd();
+		
 		if((Initialized() || Initializing()) && !component.Initialized())
 			component.Initialize();
 		
@@ -322,6 +324,8 @@ public abstract class GameEngine implements Runnable
 		
 		if(component instanceof Component)
 			Window.AddComponentFrameBounded((Component)component);
+		
+		component.OnAdd();
 		
 		if((Initialized() || Initializing()) && !component.Initialized())
 			component.Initialize();
@@ -359,6 +363,7 @@ public abstract class GameEngine implements Runnable
 		if(component instanceof Component)
 			Window.remove((Component)component);
 		
+		component.OnRemove();
 		return true;
 	}
 	
@@ -383,6 +388,8 @@ public abstract class GameEngine implements Runnable
 		
 		if(component instanceof Component)
 			Window.remove((Component)component);
+
+		component.OnRemove();
 		
 		if(dispose && component.Initialized() && !component.Disposed())
 			component.Dispose();
@@ -407,6 +414,7 @@ public abstract class GameEngine implements Runnable
 		if(ret instanceof Component)
 			Window.remove((Component)ret);
 		
+		ret.OnRemove();
 		return ret;
 	}
 	
@@ -427,6 +435,8 @@ public abstract class GameEngine implements Runnable
 		
 		if(ret instanceof Component)
 			Window.remove((Component)ret);
+		
+		ret.OnRemove();
 		
 		if(dispose && ret.Initialized() && !ret.Disposed())
 			ret.Dispose();
@@ -456,6 +466,12 @@ public abstract class GameEngine implements Runnable
 	 */
 	public void ClearComponents()
 	{
+		for(IUpdatable comp : GameComponents)
+		{
+			comp.OnRemove();
+			comp.Dispose();
+		}
+		
 		GameComponents.clear();
 		return;
 	}

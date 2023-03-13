@@ -140,7 +140,7 @@ public class HeapTree<T> extends CompleteBinaryTree<T> implements IHeap<T>
 		return EnumSet.of(PropogationDirection.PARENT);
 	}
 	
-	protected EnumSet<PropogationDirection> MaintainPropertyRemove(CompleteBinaryTreeNode<T> n)
+	@Override protected EnumSet<PropogationDirection> MaintainPropertyRemove(CompleteBinaryTreeNode<T> n)
 	{
 		// We never have to worry about the constructor removing things before percolation is enabled, so who cares
 		if(n.IsLeaf())
