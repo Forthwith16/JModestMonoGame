@@ -379,7 +379,7 @@ public abstract class AffineComponent extends JComponent
 	 * @return Returns a deep copy of the matrix transformation behind this AffineComponent.
 	 */
 	public Matrix2D GetMatrix(boolean include_parent)
-	{return include_parent && Parent != null ? new Matrix2D(M).RightMultiply(Parent.GetMatrix(true)) : new Matrix2D(M);}
+	{return include_parent && Parent != null ? new Matrix2D(M).LeftMultiply(Parent.GetMatrix(true)) : new Matrix2D(M);}
 	
 	/**
 	 * Obtains the affine transformation applied to the contents of this component.
@@ -387,7 +387,7 @@ public abstract class AffineComponent extends JComponent
 	 * @return Returns the affine transformation applied to the contents of this component.
 	 */
 	public AffineTransform GetTransformation(boolean include_parent)
-	{return include_parent && Parent != null ? new Matrix2D(M).RightMultiply(Parent.GetMatrix(true)).ToAffine() : M.ToAffine();}
+	{return include_parent && Parent != null ? new Matrix2D(M).LeftMultiply(Parent.GetMatrix(true)).ToAffine() : M.ToAffine();}
 	
 	/**
 	 * Sets the parent affine component.
