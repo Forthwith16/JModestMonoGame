@@ -278,7 +278,7 @@ public class FixedSizeGrid<T> implements IGrid<Vector2i,T>
 	{return ContainsIndex(index.X,index.Y);}
 	
 	/**
-	 * Determines if the given index lise on this grid.
+	 * Determines if the given index lies on this grid.
 	 * @param x The x index to check.
 	 * @param y The y index to check.
 	 * @return Returns true if the index is in bounds and false otherwise.
