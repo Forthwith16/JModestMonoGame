@@ -331,4 +331,26 @@ public class AbsoluteFrame extends JFrame
 		AddComponent(c,index,getContentPane().getBounds());
 		return;
 	}
+	
+	/**
+	 * Removes the component from this frame (if it exists).
+	 * @param c The component to remove.
+	 * @throws NullPointerException Thrown if {@code c} is null.
+	 */
+	public void RemoveComponent(Component c)
+	{
+		getContentPane().remove(c);
+		return;
+	}
+	
+	/**
+	 * Removes the component at the specified index from this frame.
+	 * @param index The index of the component to remove.
+	 * @throws ArrayIndexOutOfBoundsException Thrown if {@code index} is not inrange [0, getComponentCount()-1]
+	 */
+	public void RemoveComponent(int index)
+	{
+		getContentPane().remove(index);
+		return;
+	}
 }

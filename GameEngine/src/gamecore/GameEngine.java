@@ -12,6 +12,7 @@ import gamecore.datastructures.Dictionary;
 import gamecore.datastructures.LinkedList;
 import gamecore.datastructures.vectors.Vector2i;
 import gamecore.gui.AbsoluteFrame;
+import gamecore.gui.gamecomponents.DummyComponent;
 
 /**
  * The game engine that runs the game's main loop logic.  
@@ -267,6 +268,7 @@ public abstract class GameEngine implements Runnable
 	
 	/**
 	 * Adds a new game component to this engine.
+	 * Items added earlier are drawn on top of items added later.
 	 * @param component The component to add.
 	 * @return Returns true if the component was added and false otherwise.
 	 * @throws IllegalArgumentException Thrown if {@code component} is already part of this game engine.
@@ -289,6 +291,8 @@ public abstract class GameEngine implements Runnable
 		
 		if(component instanceof Component)
 			Window.AddComponentFrameBounded((Component)component);
+		else
+			Window.AddComponentFrameBounded(new DummyComponent());
 		
 		component.OnAdd();
 		
@@ -300,6 +304,7 @@ public abstract class GameEngine implements Runnable
 	
 	/**
 	 * Adds a new game component to this engine.
+	 * Items with a smaller index are drawn on top of items with a larger index.
 	 * @param component The component to add.
 	 * @param where The index to insert the component at.
 	 * @return Returns true if the component was added and false otherwise.
@@ -323,7 +328,9 @@ public abstract class GameEngine implements Runnable
 			return false;
 		
 		if(component instanceof Component)
-			Window.AddComponentFrameBounded((Component)component);
+			Window.AddComponentFrameBounded((Component)component,where);
+		else
+			Window.AddComponentFrameBounded(new DummyComponent(),where);
 		
 		component.OnAdd();
 		
@@ -351,19 +358,12 @@ public abstract class GameEngine implements Runnable
 	 */
 	public boolean RemoveComponent(IUpdatable component)
 	{
-		if(Finished())
-			throw new IllegalStateException();
+		int index = IndexOfComponent(component);
 		
-		if(component == null)
-			throw new NullPointerException();
-		
-		if(!GameComponents.remove(component))
+		if(index < 0)
 			return false;
 		
-		if(component instanceof Component)
-			Window.remove((Component)component);
-		
-		component.OnRemove();
+		RemoveComponent(index);
 		return true;
 	}
 	
@@ -377,23 +377,12 @@ public abstract class GameEngine implements Runnable
 	 */
 	public boolean RemoveComponent(IUpdatable component, boolean dispose)
 	{
-		if(Finished())
-			throw new IllegalStateException();
+		int index = IndexOfComponent(component);
 		
-		if(component == null)
-			throw new NullPointerException();
-		
-		if(!GameComponents.remove(component))
+		if(index < 0)
 			return false;
 		
-		if(component instanceof Component)
-			Window.remove((Component)component);
-
-		component.OnRemove();
-		
-		if(dispose && component.Initialized() && !component.Disposed())
-			component.Dispose();
-		
+		RemoveComponent(index,dispose);
 		return true;
 	}
 	
@@ -410,9 +399,7 @@ public abstract class GameEngine implements Runnable
 			throw new IllegalStateException();
 		
 		IUpdatable ret = GameComponents.remove(where);
-		
-		if(ret instanceof Component)
-			Window.remove((Component)ret);
+		Window.RemoveComponent(where);
 		
 		ret.OnRemove();
 		return ret;
@@ -432,9 +419,7 @@ public abstract class GameEngine implements Runnable
 			throw new IllegalStateException();
 		
 		IUpdatable ret = GameComponents.remove(where);
-		
-		if(ret instanceof Component)
-			Window.remove((Component)ret);
+		Window.RemoveComponent(where);
 		
 		ret.OnRemove();
 		
@@ -459,6 +444,27 @@ public abstract class GameEngine implements Runnable
 				return true;
 		
 		return false;
+	}
+	
+	/**
+	 * Determines if this game engine contains {@code componenent} and, if so, returns its index.
+	 * @param component The component to look for.
+	 * @return Returns the index of this component if it is found and -1 otherwise.
+	 */
+	public int IndexOfComponent(IUpdatable component)
+	{
+		if(component == null)
+			return -1;
+		
+		int ret = 0;
+		
+		for(IUpdatable u : GameComponents)
+			if(component == u)
+				return ret;
+			else
+				ret++;
+		
+		return -1;
 	}
 	
 	/**
