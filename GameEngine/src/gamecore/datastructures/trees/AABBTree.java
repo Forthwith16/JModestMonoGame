@@ -886,14 +886,14 @@ public class AABBTree<T> implements ITree<T>, Collection<T>
 			
 			if(ABCD_area <= ACBD_area)
 				if(ABCD_area <= ADBC_area)
-					return (Node[])new Object[] {A,B,C,D};
+					return new AABBTree.Node[] {A,B,C,D};
 				else
-					return (Node[])new Object[] {A,D,B,C};
+					return new AABBTree.Node[] {A,D,B,C};
 			else if(ACBD_area <= ADBC_area)
-				return (Node[])new Object[] {A,C,B,D};
+				return new AABBTree.Node[] {A,C,B,D};
 
 			// else
-			return (Node[])new Object[] {A,D,B,C};
+			return new AABBTree.Node[] {A,D,B,C};
 		}
 		
 		/**
