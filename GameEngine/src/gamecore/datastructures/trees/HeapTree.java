@@ -6,7 +6,7 @@ import java.util.EnumSet;
 import gamecore.datastructures.trees.nodes.CompleteBinaryTreeNode;
 
 /**
- * Creates a tree-hierarchy heap backed by a complete binary tree.
+ * Creates a tree-hierarchy min heap backed by a complete binary tree.
  * The iteration order is still an in-order traversal and as such does not produce its contents in the order they would be removed from the heap. 
  * @author Dawn Nye
  * @param <T> The type to store in the heap.
@@ -81,35 +81,16 @@ public class HeapTree<T> extends CompleteBinaryTree<T>
 			return EnumSet.noneOf(PropogationDirection.class);
 		
 		// We can only propogate upward on an add
-		if(n.IsLeaf())
-			if(n.IsRoot())
-				return EnumSet.noneOf(PropogationDirection.class);
-			else
-				return EnumSet.of(PropogationDirection.PARENT);
+		if(n.IsRoot())
+			return EnumSet.noneOf(PropogationDirection.class);
 		
-		if(!n.HasLeftChild())
-			if(Comparer.compare(n,n.Right()) > 0)
-				SwapNodeContents(n,n.Right());
-			else
-				return EnumSet.noneOf(PropogationDirection.class);
-		else if(!n.HasRightChild())
-			if(Comparer.compare(n,n.Left()) > 0)
-				SwapNodeContents(n,n.Left());
-			else
-				return EnumSet.noneOf(PropogationDirection.class);
-		else // We know we have two children now, so pick the min
-			if(Comparer.compare(n.Left(),n.Right()) < 0) // An else if, but this formatting is clearer
-				if(Comparer.compare(n,n.Left()) > 0) // Left child is smaller in this case
-					SwapNodeContents(n,n.Left());
-				else
-					return EnumSet.noneOf(PropogationDirection.class);
-			else // An else if, but this formatting is clearer
-				if(Comparer.compare(n,n.Right()) > 0) // Right child is smaller in this case
-					SwapNodeContents(n,n.Right());
-				else
-					return EnumSet.noneOf(PropogationDirection.class);
+		if(Comparer.compare(n,n.Parent()) < 0)
+		{
+			SwapNodeContents(n,n.Parent());
+			return EnumSet.of(PropogationDirection.PARENT);
+		}
 		
-		return EnumSet.of(PropogationDirection.PARENT);
+		return EnumSet.noneOf(PropogationDirection.class);
 	}
 	
 	@Override protected EnumSet<PropogationDirection> MaintainPropertyRemove(CompleteBinaryTreeNode<T> n)
@@ -118,7 +99,7 @@ public class HeapTree<T> extends CompleteBinaryTree<T>
 		if(n.IsLeaf())
 			return EnumSet.noneOf(PropogationDirection.class);
 		
-		// There isn' necessarily a relation between the nodes we swapped, so we might need to percolate up or down
+		// There isn't necessarily a relation between the nodes we swapped, so we might need to percolate up or down
 		// As a convenient hack, we disable upward propogation here when percolation is disabled so that we don't have to write more code for building the heap in linear time
 		if(EnablePercolation && !n.IsRoot() && Comparer.compare(n,n.Parent()) < 0)
 		{
