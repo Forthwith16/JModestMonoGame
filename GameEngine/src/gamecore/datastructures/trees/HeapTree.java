@@ -119,35 +119,16 @@ public class HeapTree<T> extends CompleteBinaryTree<T>
 			return EnumSet.noneOf(PropogationDirection.class);
 		
 		// We can only propogate upward on an add
-		if(n.IsLeaf())
-			if(n.IsRoot())
-				return EnumSet.noneOf(PropogationDirection.class);
-			else
-				return EnumSet.of(PropogationDirection.PARENT);
+		if(n.IsRoot())
+			return EnumSet.noneOf(PropogationDirection.class);
+
+		if(Comparer.compare(n,n.Parent()) < 0)
+		{
+			SwapNodeContents(n,n.Parent());
+			return EnumSet.of(PropogationDirection.PARENT);
+		}
 		
-		if(!n.HasLeftChild())
-			if(Comparer.compare(n,n.Right()) > 0)
-				SwapNodeContents(n,n.Right());
-			else
-				return EnumSet.noneOf(PropogationDirection.class);
-		else if(!n.HasRightChild())
-			if(Comparer.compare(n,n.Left()) > 0)
-				SwapNodeContents(n,n.Left());
-			else
-				return EnumSet.noneOf(PropogationDirection.class);
-		else // We know we have two children now, so pick the min
-			if(Comparer.compare(n.Left(),n.Right()) < 0) // An else if, but this formatting is clearer
-				if(Comparer.compare(n,n.Left()) > 0) // Left child is smaller in this case
-					SwapNodeContents(n,n.Left());
-				else
-					return EnumSet.noneOf(PropogationDirection.class);
-			else // An else if, but this formatting is clearer
-				if(Comparer.compare(n,n.Right()) > 0) // Right child is smaller in this case
-					SwapNodeContents(n,n.Right());
-				else
-					return EnumSet.noneOf(PropogationDirection.class);
-		
-		return EnumSet.of(PropogationDirection.PARENT);
+		return EnumSet.noneOf(PropogationDirection.class);
 	}
 	
 	@Override protected EnumSet<PropogationDirection> MaintainPropertyRemove(CompleteBinaryTreeNode<T> n)
