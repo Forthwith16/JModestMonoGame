@@ -2,11 +2,13 @@ package gamecore.datastructures.trees;
 
 import java.util.Comparator;
 import java.util.EnumSet;
+import java.util.Iterator;
 
+import gamecore.datastructures.queues.Queue;
 import gamecore.datastructures.trees.nodes.CompleteBinaryTreeNode;
 
 /**
- * Creates a tree-hierarchy min heap backed by a complete binary tree.
+ * Creates a tree-hierarchy heap backed by a complete binary tree.
  * The iteration order is still an in-order traversal and as such does not produce its contents in the order they would be removed from the heap. 
  * @author Dawn Nye
  * @param <T> The type to store in the heap.
@@ -40,17 +42,53 @@ public class HeapTree<T> extends CompleteBinaryTree<T>
 	 */
 	public HeapTree(Iterable<? extends T> seed, Comparator<T> cmp)
 	{
-		super(seed);
+		super();
 		
-		if(cmp == null)
+		if(seed == null || cmp == null)
 			throw new NullPointerException();
 		
 		Comparer = (n1,n2) -> cmp.compare(n1.Data,n2.Data);
+		
+		// We can't just slam the nodes into place with add and then heapify since that will take n log n time
+		// We'll initially build the tree via a level-order traversal
+		BuildTreeFast(seed.iterator());
 		
 		if(!IsEmpty())
 			FastHeapify(Root);
 		
 		EnablePercolation = true;
+		return;
+	}
+	
+	/**
+	 * Builds a tree in linear time.
+	 * @param seed The items to put into the tree.
+	 */
+	protected void BuildTreeFast(Iterator<? extends T> seed)
+	{
+		if(seed == null || !seed.hasNext())
+			return;
+		
+		Queue<CompleteBinaryTreeNode<T>> Q = new Queue<CompleteBinaryTreeNode<T>>();
+		Root = new CompleteBinaryTreeNode<T>(seed.next(),null,null,null,false);
+		Count++;
+		
+		Q.Enqueue(Root);
+		
+		while(seed.hasNext())
+		{
+			CompleteBinaryTreeNode<T> n = Q.Dequeue();
+			
+			Q.Enqueue(new CompleteBinaryTreeNode<T>(seed.next(),n,null,null,true));
+			Count++;
+			
+			if(seed.hasNext())
+			{
+				Q.Enqueue(new CompleteBinaryTreeNode<T>(seed.next(),n,null,null,false));
+				Count++;
+			}
+		}
+		
 		return;
 	}
 	
@@ -81,16 +119,35 @@ public class HeapTree<T> extends CompleteBinaryTree<T>
 			return EnumSet.noneOf(PropogationDirection.class);
 		
 		// We can only propogate upward on an add
-		if(n.IsRoot())
-			return EnumSet.noneOf(PropogationDirection.class);
+		if(n.IsLeaf())
+			if(n.IsRoot())
+				return EnumSet.noneOf(PropogationDirection.class);
+			else
+				return EnumSet.of(PropogationDirection.PARENT);
 		
-		if(Comparer.compare(n,n.Parent()) < 0)
-		{
-			SwapNodeContents(n,n.Parent());
-			return EnumSet.of(PropogationDirection.PARENT);
-		}
+		if(!n.HasLeftChild())
+			if(Comparer.compare(n,n.Right()) > 0)
+				SwapNodeContents(n,n.Right());
+			else
+				return EnumSet.noneOf(PropogationDirection.class);
+		else if(!n.HasRightChild())
+			if(Comparer.compare(n,n.Left()) > 0)
+				SwapNodeContents(n,n.Left());
+			else
+				return EnumSet.noneOf(PropogationDirection.class);
+		else // We know we have two children now, so pick the min
+			if(Comparer.compare(n.Left(),n.Right()) < 0) // An else if, but this formatting is clearer
+				if(Comparer.compare(n,n.Left()) > 0) // Left child is smaller in this case
+					SwapNodeContents(n,n.Left());
+				else
+					return EnumSet.noneOf(PropogationDirection.class);
+			else // An else if, but this formatting is clearer
+				if(Comparer.compare(n,n.Right()) > 0) // Right child is smaller in this case
+					SwapNodeContents(n,n.Right());
+				else
+					return EnumSet.noneOf(PropogationDirection.class);
 		
-		return EnumSet.noneOf(PropogationDirection.class);
+		return EnumSet.of(PropogationDirection.PARENT);
 	}
 	
 	@Override protected EnumSet<PropogationDirection> MaintainPropertyRemove(CompleteBinaryTreeNode<T> n)
@@ -99,7 +156,7 @@ public class HeapTree<T> extends CompleteBinaryTree<T>
 		if(n.IsLeaf())
 			return EnumSet.noneOf(PropogationDirection.class);
 		
-		// There isn't necessarily a relation between the nodes we swapped, so we might need to percolate up or down
+		// There isn' necessarily a relation between the nodes we swapped, so we might need to percolate up or down
 		// As a convenient hack, we disable upward propogation here when percolation is disabled so that we don't have to write more code for building the heap in linear time
 		if(EnablePercolation && !n.IsRoot() && Comparer.compare(n,n.Parent()) < 0)
 		{

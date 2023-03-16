@@ -93,7 +93,7 @@ public class PriorityQueueTree<T> implements IQueue<T>
 		return new Iterator<T>()
 		{
 			public boolean hasNext()
-			{return H.IsEmpty();}
+			{return !H.IsEmpty();}
 
 			public T next()
 			{
