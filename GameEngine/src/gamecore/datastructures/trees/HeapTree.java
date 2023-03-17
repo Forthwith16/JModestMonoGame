@@ -2,7 +2,9 @@ package gamecore.datastructures.trees;
 
 import java.util.Comparator;
 import java.util.EnumSet;
+import java.util.Iterator;
 
+import gamecore.datastructures.queues.Queue;
 import gamecore.datastructures.trees.nodes.CompleteBinaryTreeNode;
 
 /**
@@ -40,17 +42,53 @@ public class HeapTree<T> extends CompleteBinaryTree<T>
 	 */
 	public HeapTree(Iterable<? extends T> seed, Comparator<T> cmp)
 	{
-		super(seed);
+		super();
 		
-		if(cmp == null)
+		if(seed == null || cmp == null)
 			throw new NullPointerException();
 		
 		Comparer = (n1,n2) -> cmp.compare(n1.Data,n2.Data);
+		
+		// We can't just slam the nodes into place with add and then heapify since that will take n log n time
+		// We'll initially build the tree via a level-order traversal
+		BuildTreeFast(seed.iterator());
 		
 		if(!IsEmpty())
 			FastHeapify(Root);
 		
 		EnablePercolation = true;
+		return;
+	}
+	
+	/**
+	 * Builds a tree in linear time.
+	 * @param seed The items to put into the tree.
+	 */
+	protected void BuildTreeFast(Iterator<? extends T> seed)
+	{
+		if(seed == null || !seed.hasNext())
+			return;
+		
+		Queue<CompleteBinaryTreeNode<T>> Q = new Queue<CompleteBinaryTreeNode<T>>();
+		Root = new CompleteBinaryTreeNode<T>(seed.next(),null,null,null,false);
+		Count++;
+		
+		Q.Enqueue(Root);
+		
+		while(seed.hasNext())
+		{
+			CompleteBinaryTreeNode<T> n = Q.Dequeue();
+			
+			Q.Enqueue(new CompleteBinaryTreeNode<T>(seed.next(),n,null,null,true));
+			Count++;
+			
+			if(seed.hasNext())
+			{
+				Q.Enqueue(new CompleteBinaryTreeNode<T>(seed.next(),n,null,null,false));
+				Count++;
+			}
+		}
+		
 		return;
 	}
 	
@@ -81,35 +119,16 @@ public class HeapTree<T> extends CompleteBinaryTree<T>
 			return EnumSet.noneOf(PropogationDirection.class);
 		
 		// We can only propogate upward on an add
-		if(n.IsLeaf())
-			if(n.IsRoot())
-				return EnumSet.noneOf(PropogationDirection.class);
-			else
-				return EnumSet.of(PropogationDirection.PARENT);
+		if(n.IsRoot())
+			return EnumSet.noneOf(PropogationDirection.class);
+
+		if(Comparer.compare(n,n.Parent()) < 0)
+		{
+			SwapNodeContents(n,n.Parent());
+			return EnumSet.of(PropogationDirection.PARENT);
+		}
 		
-		if(!n.HasLeftChild())
-			if(Comparer.compare(n,n.Right()) > 0)
-				SwapNodeContents(n,n.Right());
-			else
-				return EnumSet.noneOf(PropogationDirection.class);
-		else if(!n.HasRightChild())
-			if(Comparer.compare(n,n.Left()) > 0)
-				SwapNodeContents(n,n.Left());
-			else
-				return EnumSet.noneOf(PropogationDirection.class);
-		else // We know we have two children now, so pick the min
-			if(Comparer.compare(n.Left(),n.Right()) < 0) // An else if, but this formatting is clearer
-				if(Comparer.compare(n,n.Left()) > 0) // Left child is smaller in this case
-					SwapNodeContents(n,n.Left());
-				else
-					return EnumSet.noneOf(PropogationDirection.class);
-			else // An else if, but this formatting is clearer
-				if(Comparer.compare(n,n.Right()) > 0) // Right child is smaller in this case
-					SwapNodeContents(n,n.Right());
-				else
-					return EnumSet.noneOf(PropogationDirection.class);
-		
-		return EnumSet.of(PropogationDirection.PARENT);
+		return EnumSet.noneOf(PropogationDirection.class);
 	}
 	
 	@Override protected EnumSet<PropogationDirection> MaintainPropertyRemove(CompleteBinaryTreeNode<T> n)
