@@ -13,6 +13,12 @@ import gamecore.datastructures.trees.nodes.CompleteBinaryTreeNode;
  * @author Dawn Nye
  * @param <T> The type to store in the heap.
  */
+/**
+ * Creates a tree-hierarchy heap backed by a complete binary tree.
+ * The iteration order is still an in-order traversal and as such does not produce its contents in the order they would be removed from the heap. 
+ * @author Dawn Nye
+ * @param <T> The type to store in the heap.
+ */
 public class HeapTree<T> extends CompleteBinaryTree<T>
 {
 	/**
@@ -109,7 +115,7 @@ public class HeapTree<T> extends CompleteBinaryTree<T>
 		if(n.HasRightChild())
 			FastHeapify(n.Right());
 		
-		PropogatePropertyRemove(n); // Since EnablePropogation is still false as this point, we can use the MaintainPropertyRemove function to prercolate down
+		PropogatePropertyRemove(n); // Since EnablePercolation is still false as this point, we can use the MaintainPropertyRemove function to percolate down
 		return;
 	}
 	
@@ -118,7 +124,7 @@ public class HeapTree<T> extends CompleteBinaryTree<T>
 		if(!EnablePercolation)
 			return EnumSet.noneOf(PropogationDirection.class);
 		
-		// We can only propogate upward on an add
+		// We can only propagate upward on an add
 		if(n.IsRoot())
 			return EnumSet.noneOf(PropogationDirection.class);
 
@@ -134,28 +140,23 @@ public class HeapTree<T> extends CompleteBinaryTree<T>
 	@Override protected EnumSet<PropogationDirection> MaintainPropertyRemove(CompleteBinaryTreeNode<T> n)
 	{
 		// We never have to worry about the constructor removing things before percolation is enabled, so who cares
-		if(n.IsLeaf())
+		if(!n.IsPartOfTree())
 			return EnumSet.noneOf(PropogationDirection.class);
 		
-		// There isn' necessarily a relation between the nodes we swapped, so we might need to percolate up or down
-		// As a convenient hack, we disable upward propogation here when percolation is disabled so that we don't have to write more code for building the heap in linear time
+		// There isn't necessarily a relation between the nodes we swapped, so we might need to percolate up or down
+		// As a convenient hack, we disable upward propagation here when percolation is disabled so that we don't have to write more code for building the heap in linear time
 		if(EnablePercolation && !n.IsRoot() && Comparer.compare(n,n.Parent()) < 0)
 		{
 			SwapNodeContents(n,n.Parent());
 			return EnumSet.of(PropogationDirection.PARENT);
 		}
 		
-		// If we don't have a left child, we need only check the right child
-		if(!n.HasLeftChild())
-			if(Comparer.compare(n,n.Right()) > 0)
-			{
-				SwapNodeContents(n,n.Right());
-				return EnumSet.of(PropogationDirection.RIGHT);
-			}
-			else
-				return EnumSet.noneOf(PropogationDirection.class);
+		// If we're a leaf, we're done
+		if(n.IsLeaf())
+			return EnumSet.noneOf(PropogationDirection.class);
 		
 		// If we don't have a right child, we need only check the left child
+		// There is no symmetrical case to worry about since the tree is complete
 		if(!n.HasRightChild())
 			if(Comparer.compare(n,n.Left()) > 0)
 			{

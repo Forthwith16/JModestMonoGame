@@ -240,7 +240,7 @@ public abstract class AbstractBinaryTreeNode<T,ME extends AbstractBinaryTreeNode
 	 * @return Returns true if this node is part of its tree and false otherwise.
 	 */
 	public boolean IsPartOfTree()
-	{return Parent != null && (IsRoot() || IsLeftChild() || IsRightChild()) && (!HasLeftChild() || Left.Parent == this) && (!HasRightChild() || Right.Parent == this);}
+	{return Parent != null && (IsRoot() || IsLeftChild() && Parent.Left == this || IsRightChild() && Parent.Right == this) && (!HasLeftChild() || Left.Parent == this) && (!HasRightChild() || Right.Parent == this);}
 	
 	/**
 	 * Gets the node that is now in its old position after being removed from the tree.
