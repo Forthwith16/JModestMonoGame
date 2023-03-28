@@ -1,5 +1,6 @@
 package gamecore.LINQ;
 
+import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -869,13 +870,9 @@ public final class LINQ
 		if(source == null || cmp == null)
 			throw new NullPointerException();
 		
-		T[] arr = (T[])new Object[Count(source)];
-		int i = 0;
-		
-		for(T t : source)
-			arr[i++] = t;
-		
+		T[] arr = ToArray(source);
 		Arrays.sort(arr,cmp);
+		
 		return ToIterable(arr);
 	}
 	
@@ -892,7 +889,7 @@ public final class LINQ
 	 * @return Returns the 'sum' of the sequence {@code source}. In the degenerate 'sum' when {@code source} is empty, this will return null.
 	 * @throws NullPointerException Thrown if {@code source} or {@code operation} is null.
 	 */
-	public static <T> T Sum(Iterable<? extends T> source, BinaryOperation<T,T> operation)
+	public static <T> T Sum(Iterable<? extends T> source, DoubleInputTransformation<T,T> operation)
 	{
 		if(source == null || operation == null)
 			throw new NullPointerException();
@@ -920,7 +917,14 @@ public final class LINQ
 		if(source == null)
 			throw new NullPointerException();
 		
-		T[] arr = (T[])new Object[Count(source)];
+		Iterator<? extends T> iter = source.iterator();
+		
+		if(!iter.hasNext())
+			return (T[])new Object[0];
+		
+		T first = iter.next();
+		
+		T[] arr = (T[])Array.newInstance(first.getClass(),Count(source));
 		int i = 0;
 		
 		for(T t : source)
