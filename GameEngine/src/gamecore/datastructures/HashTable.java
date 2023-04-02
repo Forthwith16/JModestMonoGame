@@ -36,7 +36,8 @@ public class HashTable<T> implements Collection<T>, ICollection<T>
 	
 	/**
 	 * Creates an empty hash table.
-	 * @param c The initial capacity.
+	 * @param c The initial capacity. This value must be positive.
+	 * @throws IllegalArgumentException Thrown if {@code c} is nonpositive.
 	 */
 	public HashTable(int c)
 	{
@@ -45,10 +46,22 @@ public class HashTable<T> implements Collection<T>, ICollection<T>
 	}
 	
 	/**
+	 * Creates an empty hash table.
+	 * @param l The load factor. This value must be at least 0.55.
+	 * @throws IllegalArgumentException Thrown if {@code l} is less than 0.55.
+	 */
+	public HashTable(double l)
+	{
+		this(null,16,l,false);
+		return;
+	}
+	
+	/**
 	 * Creates a hash table.
 	 * @param seed The initial population of the hash table.
-	 * @param c The initial capacity.
+	 * @param c The initial capacity. This value must be positive.
 	 * @throws NullPointerException Thrown if {@code seed} is null.
+	 * @throws IllegalArgumentException Thrown if {@code c} is nonpositive.
 	 */
 	public HashTable(Iterable<? extends T> seed, int c)
 	{
@@ -57,9 +70,23 @@ public class HashTable<T> implements Collection<T>, ICollection<T>
 	}
 	
 	/**
-	 * Creates an empty hash table.
-	 * @param c The initial capacity.
+	 * Creates a hash table.
+	 * @param seed The initial population of the hash table.
 	 * @param l The load factor. This value must be at least 0.55.
+	 * @throws NullPointerException Thrown if {@code seed} is null.
+	 * @throws IllegalArgumentException Thrown if {@code l} is less than 0.55.
+	 */
+	public HashTable(Iterable<? extends T> seed, double l)
+	{
+		this(seed,16,l,true);
+		return;
+	}
+	
+	/**
+	 * Creates an empty hash table.
+	 * @param c The initial capacity. This value must be positive.
+	 * @param l The load factor. This value must be at least 0.55.
+	 * @throws IllegalArgumentException Thrown if {@code c} is nonpositive or if {@code l} is less than 0.55.
 	 */
 	public HashTable(int c, double l)
 	{
@@ -70,9 +97,10 @@ public class HashTable<T> implements Collection<T>, ICollection<T>
 	/**
 	 * Creates a hash table.
 	 * @param seed The initial population of the hash table.
-	 * @param c The initial capacity.
+	 * @param c The initial capacity. This value must be positive.
 	 * @param l The load factor. This value must be at least 0.55.
 	 * @throws NullPointerException Thrown if {@code seed} is null.
+	 * @throws IllegalArgumentException Thrown if {@code c} is nonpositive or if {@code l} is less than 0.55.
 	 */
 	public HashTable(Iterable<? extends T> seed, int c, double l)
 	{
@@ -83,17 +111,21 @@ public class HashTable<T> implements Collection<T>, ICollection<T>
 	/**
 	 * Creates a hash table.
 	 * @param seed The initial population of the hash table.
-	 * @param c The initial capacity.
+	 * @param c The initial capacity. This value must be positive.
 	 * @param l The load factor. This value must be at least 0.55. 
-	 * @param null_check Determines if there is supposed to be a non null value for {@code seed}.
+	 * @param not_null Determines if there is supposed to be a non null value for {@code seed}.
 	 * @throws NullPointerException Thrown if {@code seed} is null and {@code null_check} is false.
+	 * @throws IllegalArgumentException Thrown if {@code c} is nonpositive or if {@code l} is less than 0.55.
 	 */
 	protected HashTable(Iterable<? extends T> seed, int c, double l, boolean null_check)
 	{
+		if(c < 1 || l < 0.55)
+			throw new IllegalArgumentException();
+		
 		Table = (LinkedList<T>[])new LinkedList[InitialCapacity = c];
 		
 		Count = 0;
-		LoadFactor = Math.max(0.55,l);
+		LoadFactor = l;
 		
 		// We blindly move forward if we are null checking
 		if(null_check || seed != null) 
