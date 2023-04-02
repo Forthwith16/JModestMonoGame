@@ -85,15 +85,20 @@ public class HashTable<T> implements Collection<T>, ICollection<T>
 	 * @param seed The initial population of the hash table.
 	 * @param c The initial capacity.
 	 * @param l The load factor. This value must be at least 0.55. 
-	 * @param not_null Determines if there is supposed to be a non null value for {@code seed}.
+	 * @param null_check Determines if there is supposed to be a non null value for {@code seed}.
 	 * @throws NullPointerException Thrown if {@code seed} is null and {@code null_check} is false.
 	 */
-	protected HashTable(Iterable<? extends T> seed, int c, double l, boolean not_null)
+	protected HashTable(Iterable<? extends T> seed, int c, double l, boolean null_check)
 	{
 		Table = (LinkedList<T>[])new LinkedList[InitialCapacity = c];
 		
 		Count = 0;
 		LoadFactor = Math.max(0.55,l);
+		
+		// We blindly move forward if we are null checking
+		if(null_check || seed != null) 
+			for(T t : seed)
+				add(t);
 		
 		return;
 	}
