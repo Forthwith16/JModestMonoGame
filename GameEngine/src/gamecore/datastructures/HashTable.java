@@ -26,7 +26,7 @@ public class HashTable<T> implements Collection<T>, ICollection<T>
 	/**
 	 * Creates a hash table.
 	 * @param seed The initial population of the hash table.
-	 * @throws NullPointerException Thrown if {@code seed} is null.
+	 * @throws NullPointerException Thrown if {@code seed} is null or contains null.
 	 */
 	public HashTable(Iterable<? extends T> seed)
 	{
@@ -60,7 +60,7 @@ public class HashTable<T> implements Collection<T>, ICollection<T>
 	 * Creates a hash table.
 	 * @param seed The initial population of the hash table.
 	 * @param c The initial capacity. This value must be positive.
-	 * @throws NullPointerException Thrown if {@code seed} is null.
+	 * @throws NullPointerException Thrown if {@code seed} is null or contains null.
 	 * @throws IllegalArgumentException Thrown if {@code c} is nonpositive.
 	 */
 	public HashTable(Iterable<? extends T> seed, int c)
@@ -73,7 +73,7 @@ public class HashTable<T> implements Collection<T>, ICollection<T>
 	 * Creates a hash table.
 	 * @param seed The initial population of the hash table.
 	 * @param l The load factor. This value must be at least 0.55.
-	 * @throws NullPointerException Thrown if {@code seed} is null.
+	 * @throws NullPointerException Thrown if {@code seed} is null or contains null.
 	 * @throws IllegalArgumentException Thrown if {@code l} is less than 0.55.
 	 */
 	public HashTable(Iterable<? extends T> seed, double l)
@@ -99,7 +99,7 @@ public class HashTable<T> implements Collection<T>, ICollection<T>
 	 * @param seed The initial population of the hash table.
 	 * @param c The initial capacity. This value must be positive.
 	 * @param l The load factor. This value must be at least 0.55.
-	 * @throws NullPointerException Thrown if {@code seed} is null.
+	 * @throws NullPointerException Thrown if {@code seed} is null or contains null.
 	 * @throws IllegalArgumentException Thrown if {@code c} is nonpositive or if {@code l} is less than 0.55.
 	 */
 	public HashTable(Iterable<? extends T> seed, int c, double l)
@@ -114,7 +114,7 @@ public class HashTable<T> implements Collection<T>, ICollection<T>
 	 * @param c The initial capacity. This value must be positive.
 	 * @param l The load factor. This value must be at least 0.55. 
 	 * @param not_null Determines if there is supposed to be a non null value for {@code seed}.
-	 * @throws NullPointerException Thrown if {@code seed} is null and {@code null_check} is false.
+	 * @throws NullPointerException Thrown if {@code seed} is null and {@code null_check} is false or if {@code seed} contains null
 	 * @throws IllegalArgumentException Thrown if {@code c} is nonpositive or if {@code l} is less than 0.55.
 	 */
 	protected HashTable(Iterable<? extends T> seed, int c, double l, boolean null_check)
