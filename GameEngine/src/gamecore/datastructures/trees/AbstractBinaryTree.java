@@ -138,7 +138,7 @@ public abstract class AbstractBinaryTree<T,NODE extends AbstractBinaryTreeNode<T
 		if(n == null)
 			return;
 		
-		for(PropogationDirection dir : MaintainPropertyAdd(n))
+		for(PropagationDirection dir : MaintainPropertyAdd(n))
 			switch(dir)
 			{
 			case PARENT:
@@ -161,8 +161,8 @@ public abstract class AbstractBinaryTree<T,NODE extends AbstractBinaryTreeNode<T
 	 * @param n The node that was added or an ancestor of it as the property is propogated up the tree.
 	 * @return Returns a set of enum flags specifying which directions the property must be propogated to be true everywhere. If this value is empty, then there is nothing left to do.
 	 */
-	protected EnumSet<PropogationDirection> MaintainPropertyAdd(NODE n)
-	{return EnumSet.noneOf(PropogationDirection.class);}
+	protected EnumSet<PropagationDirection> MaintainPropertyAdd(NODE n)
+	{return EnumSet.noneOf(PropagationDirection.class);}
 	
 	public boolean Remove(T t)
 	{
@@ -221,7 +221,7 @@ public abstract class AbstractBinaryTree<T,NODE extends AbstractBinaryTreeNode<T
 		if(n == null)
 			return;
 		
-		for(PropogationDirection dir : MaintainPropertyRemove(n))
+		for(PropagationDirection dir : MaintainPropertyRemove(n))
 			switch(dir)
 			{
 			case PARENT:
@@ -244,8 +244,8 @@ public abstract class AbstractBinaryTree<T,NODE extends AbstractBinaryTreeNode<T
 	 * @param n The node that was removed (and hence is no longer part of the tree) or some other node reached via propogation through the tree.
 	 * @return Returns a set of enum flags specifying which directions the property must be propogated to be true everywhere. If this value is empty, then there is nothing left to do.
 	 */
-	protected EnumSet<PropogationDirection> MaintainPropertyRemove(NODE n)
-	{return EnumSet.noneOf(PropogationDirection.class);}
+	protected EnumSet<PropagationDirection> MaintainPropertyRemove(NODE n)
+	{return EnumSet.noneOf(PropagationDirection.class);}
 	
 	/**
 	 * Finds a node containing {@code t}.
@@ -593,10 +593,10 @@ public abstract class AbstractBinaryTree<T,NODE extends AbstractBinaryTreeNode<T
 	protected String MyToStringString = null;
 	
 	/**
-	 * Represents the required direction of propogation for a property in a binary tree to be maintained.
+	 * Represents the required direction of propagation for a property in a binary tree to be maintained.
 	 * @author Dawn Nye
 	 */
-	protected static enum PropogationDirection
+	protected static enum PropagationDirection
 	{
 		PARENT,
 		LEFT,

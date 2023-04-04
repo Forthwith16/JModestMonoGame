@@ -119,41 +119,41 @@ public class HeapTree<T> extends CompleteBinaryTree<T>
 		return;
 	}
 	
-	@Override protected EnumSet<PropogationDirection> MaintainPropertyAdd(CompleteBinaryTreeNode<T> n)
+	@Override protected EnumSet<PropagationDirection> MaintainPropertyAdd(CompleteBinaryTreeNode<T> n)
 	{
 		if(!EnablePercolation)
-			return EnumSet.noneOf(PropogationDirection.class);
+			return EnumSet.noneOf(PropagationDirection.class);
 		
 		// We can only propagate upward on an add
 		if(n.IsRoot())
-			return EnumSet.noneOf(PropogationDirection.class);
+			return EnumSet.noneOf(PropagationDirection.class);
 
 		if(Comparer.compare(n,n.Parent()) < 0)
 		{
 			SwapNodeContents(n,n.Parent());
-			return EnumSet.of(PropogationDirection.PARENT);
+			return EnumSet.of(PropagationDirection.PARENT);
 		}
 		
-		return EnumSet.noneOf(PropogationDirection.class);
+		return EnumSet.noneOf(PropagationDirection.class);
 	}
 	
-	@Override protected EnumSet<PropogationDirection> MaintainPropertyRemove(CompleteBinaryTreeNode<T> n)
+	@Override protected EnumSet<PropagationDirection> MaintainPropertyRemove(CompleteBinaryTreeNode<T> n)
 	{
 		// We never have to worry about the constructor removing things before percolation is enabled, so who cares
 		if(!n.IsPartOfTree())
-			return EnumSet.noneOf(PropogationDirection.class);
+			return EnumSet.noneOf(PropagationDirection.class);
 		
 		// There isn't necessarily a relation between the nodes we swapped, so we might need to percolate up or down
 		// As a convenient hack, we disable upward propagation here when percolation is disabled so that we don't have to write more code for building the heap in linear time
 		if(EnablePercolation && !n.IsRoot() && Comparer.compare(n,n.Parent()) < 0)
 		{
 			SwapNodeContents(n,n.Parent());
-			return EnumSet.of(PropogationDirection.PARENT);
+			return EnumSet.of(PropagationDirection.PARENT);
 		}
 		
 		// If we're a leaf, we're done
 		if(n.IsLeaf())
-			return EnumSet.noneOf(PropogationDirection.class);
+			return EnumSet.noneOf(PropagationDirection.class);
 		
 		// If we don't have a right child, we need only check the left child
 		// There is no symmetrical case to worry about since the tree is complete
@@ -161,28 +161,28 @@ public class HeapTree<T> extends CompleteBinaryTree<T>
 			if(Comparer.compare(n,n.Left()) > 0)
 			{
 				SwapNodeContents(n,n.Left());
-				return EnumSet.of(PropogationDirection.LEFT);
+				return EnumSet.of(PropagationDirection.LEFT);
 			}
 			else
-				return EnumSet.noneOf(PropogationDirection.class);
+				return EnumSet.noneOf(PropagationDirection.class);
 		
 		// We have two children and need to pick the minimum to compare ourselves against
 		if(Comparer.compare(n.Left(),n.Right()) < 0)
 			if(Comparer.compare(n,n.Left()) > 0) // Left child is smaller in this case
 			{
 				SwapNodeContents(n,n.Left());
-				return EnumSet.of(PropogationDirection.LEFT);
+				return EnumSet.of(PropagationDirection.LEFT);
 			}
 			else
-				return EnumSet.noneOf(PropogationDirection.class);
+				return EnumSet.noneOf(PropagationDirection.class);
 		else // An else if, but this formatting is clearer
 			if(Comparer.compare(n,n.Right()) > 0) // Right child is smaller in this case
 			{
 				SwapNodeContents(n,n.Right());
-				return EnumSet.of(PropogationDirection.RIGHT);
+				return EnumSet.of(PropagationDirection.RIGHT);
 			}
 			else
-				return EnumSet.noneOf(PropogationDirection.class);
+				return EnumSet.noneOf(PropagationDirection.class);
 	}
 	
 	/**
