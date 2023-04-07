@@ -108,6 +108,9 @@ public class Dictionary<K,V> implements ICollection<KeyValuePair<K,V>>, IMap<K,V
 	 */
 	public V Get(K key)
 	{
+		if(key == null)
+			throw new NoSuchElementException();
+		
 		KeyValuePair<K,V> ret = Entries.get(new KeyValuePair<K,V>(key,null));
 		
 		if(ret == null)
@@ -122,7 +125,12 @@ public class Dictionary<K,V> implements ICollection<KeyValuePair<K,V>>, IMap<K,V
 	 * @return Returns the key-value pair associated with {@code key} or null if it does not exist.
 	 */
 	public KeyValuePair<K,V> TryGet(K key)
-	{return Entries.get(new KeyValuePair<K,V>(key,null));}
+	{
+		if(key == null)
+			return null;
+		
+		return Entries.get(new KeyValuePair<K,V>(key,null));
+	}
 	
 	/**
 	 * Removes the dictionary entry with key {@code key} if it exists.
@@ -130,7 +138,12 @@ public class Dictionary<K,V> implements ICollection<KeyValuePair<K,V>>, IMap<K,V
 	 * @return Returns true if the key was removed and false otherwise.
 	 */
 	public boolean RemoveByKey(K key)
-	{return Entries.remove(new KeyValuePair<K,V>(key,null));}
+	{
+		if(key == null)
+			return false;
+		
+		return Entries.remove(new KeyValuePair<K,V>(key,null));
+	}
 	
 	/**
 	 * Determines if the dictionary contains the key {@code k}.
@@ -201,7 +214,7 @@ public class Dictionary<K,V> implements ICollection<KeyValuePair<K,V>>, IMap<K,V
 			return false;
 		
 		if(p.Item2 == null ? t.Item2 == null : p.Item2.equals(t.Item2))
-			RemoveByKey(t.Item1);
+			return RemoveByKey(t.Item1);
 		
 		return false;
 	}
@@ -228,26 +241,15 @@ public class Dictionary<K,V> implements ICollection<KeyValuePair<K,V>>, IMap<K,V
 		return;
 	}
 	
-	/**
-	 * Determines the number of entries in the dictionary.
-	 * @return Returns the number of entries in the dictionary.
-	 */
 	public int Count()
 	{return Entries.size();}
 	
-	/**
-	 * Determines if the dictionary is empty.
-	 */
 	public boolean IsEmpty()
 	{return Count() == 0;}
 	
 	public Iterator<KeyValuePair<K,V>> iterator()
 	{return Entries.iterator();}
 	
-	/**
-	 * Obtains the keys in the dictionary.
-	 * @return Returns the keys in the dictionary. They are guaranteed to appear in the same order as their values as obtained from Values.
-	 */
 	public Iterable<K> Keys()
 	{
 		return new Iterable<K>()
@@ -257,10 +259,6 @@ public class Dictionary<K,V> implements ICollection<KeyValuePair<K,V>>, IMap<K,V
 		};
 	}
 	
-	/**
-	 * Obtains the values in the dictionary.
-	 * @return Returns the values in the dictionary. They are guaranteed to appear in the same order as their keys as obtained from Keys.
-	 */
 	public Iterable<V> Values()
 	{
 		return new Iterable<V>()
