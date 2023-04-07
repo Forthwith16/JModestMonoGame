@@ -4,8 +4,8 @@ import java.util.NoSuchElementException;
 
 import gamecore.GlobalConstants;
 import gamecore.IUpdatable;
-import gamecore.datastructures.Dictionary;
 import gamecore.datastructures.LinkedList;
+import gamecore.datastructures.maps.Dictionary;
 import gamecore.time.TimePartition;
 
 /**

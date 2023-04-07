@@ -15,8 +15,8 @@ import javax.imageio.stream.ImageInputStream;
 
 import gamecore.datastructures.ArrayList;
 import gamecore.datastructures.CellRectangle;
-import gamecore.datastructures.Dictionary;
 import gamecore.datastructures.LinkedList;
+import gamecore.datastructures.maps.Dictionary;
 import gamecore.datastructures.vectors.Vector2i;
 
 /**

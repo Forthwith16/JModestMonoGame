@@ -8,8 +8,8 @@ import java.awt.event.WindowEvent;
 import java.util.NoSuchElementException;
 
 import gamecore.LINQ.LINQ;
-import gamecore.datastructures.Dictionary;
 import gamecore.datastructures.LinkedList;
+import gamecore.datastructures.maps.Dictionary;
 import gamecore.datastructures.vectors.Vector2i;
 import gamecore.gui.AbsoluteFrame;
 import gamecore.gui.gamecomponents.DummyComponent;

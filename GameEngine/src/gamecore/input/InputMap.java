@@ -2,8 +2,8 @@ package gamecore.input;
 
 import java.util.NoSuchElementException;
 
-import gamecore.datastructures.Dictionary;
 import gamecore.datastructures.LinkedList;
+import gamecore.datastructures.maps.Dictionary;
 import gamecore.input.binding.ConstantBinding;
 import gamecore.input.binding.CustomBinding;
 import gamecore.input.binding.InputBinding;

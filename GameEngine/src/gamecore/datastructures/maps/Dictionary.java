@@ -1,8 +1,11 @@
-package gamecore.datastructures;
+package gamecore.datastructures.maps;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
+import gamecore.datastructures.HashTable;
+import gamecore.datastructures.ICollection;
+import gamecore.datastructures.LinkedList;
 import gamecore.datastructures.tuples.KeyValuePair;
 
 /**
@@ -13,7 +16,7 @@ import gamecore.datastructures.tuples.KeyValuePair;
  * @param <K> The key type.
  * @param <V> The value type.
  */
-public class Dictionary<K,V> implements ICollection<KeyValuePair<K,V>>
+public class Dictionary<K,V> implements ICollection<KeyValuePair<K,V>>, IMap<K,V>
 {
 	/**
 	 * Creates an empty dictionary.
@@ -234,7 +237,6 @@ public class Dictionary<K,V> implements ICollection<KeyValuePair<K,V>>
 	
 	/**
 	 * Determines if the dictionary is empty.
-	 * @return
 	 */
 	public boolean IsEmpty()
 	{return Count() == 0;}
@@ -244,7 +246,7 @@ public class Dictionary<K,V> implements ICollection<KeyValuePair<K,V>>
 	
 	/**
 	 * Obtains the keys in the dictionary.
-	 * @return Returns the keys in the dictionary. They are garunteed to appear in the same order as their values as obtained from Values.
+	 * @return Returns the keys in the dictionary. They are guaranteed to appear in the same order as their values as obtained from Values.
 	 */
 	public Iterable<K> Keys()
 	{
@@ -257,7 +259,7 @@ public class Dictionary<K,V> implements ICollection<KeyValuePair<K,V>>
 	
 	/**
 	 * Obtains the values in the dictionary.
-	 * @return Returns the values in the dictionary. They are garunteed to appear in the same order as their keys as obtained from Keys.
+	 * @return Returns the values in the dictionary. They are guaranteed to appear in the same order as their keys as obtained from Keys.
 	 */
 	public Iterable<V> Values()
 	{
