@@ -6,7 +6,7 @@ import java.util.NoSuchElementException;
  * Defines the abstract notion of a (discrete) grid, an indexing system (likely a periodic and 2D tessellated set of shapes) which denote cells.
  * Each cell may be referenced via an object of generic type {@code I}.
  * Often, {@code I} will be an integer pair of coordinates or a string name.
- * Excpliit implementations of this interface for, for example {@code I} = (Integer,Integer), may speed up computation.
+ * Explicit implementations of this interface for, for example {@code I} = (Integer,Integer), may speed up computation.
  * @author Dawn Nye
  * @param <I> The index type.
  * @param <T> The item type.
