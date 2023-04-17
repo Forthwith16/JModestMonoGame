@@ -275,7 +275,7 @@ public class Dictionary<K,V> implements ICollection<KeyValuePair<K,V>>, IMap<K,V
 		for(KeyValuePair<K,V> p : this)
 			ret += p.Item1 + " -> " + p.Item2 + "\n";
 		
-		return ret.substring(0,ret.length() - 1);
+		return ret.equals("") ? "" : ret.substring(0,ret.length() - 1);
 	}
 	
 	/**

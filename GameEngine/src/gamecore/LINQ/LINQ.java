@@ -373,6 +373,14 @@ public final class LINQ
 	}
 	
 	/**
+	 * Fixes a sequence so that the backing structure the iterable came from may be changed without affecting the iteration.
+	 * @param source The source sequence.
+	 * @return Returns a new sequence that iterates independently of the source.
+	 */
+	public static <T> Iterable<T> FixSequence(Iterable<? extends T> source)
+	{return ToIterable(ToArray(source));}
+	
+	/**
 	 * Finds the first index of {@code target} in {@code source}.
 	 * @param <T> The iterable type.
 	 * @param source The source sequence.

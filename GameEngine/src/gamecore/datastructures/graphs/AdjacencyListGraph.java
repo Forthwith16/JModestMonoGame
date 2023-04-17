@@ -34,6 +34,7 @@ public class AdjacencyListGraph<V,E> implements IGraph<V,E>
 		
 		VCount = 0;
 		ECount = 0;
+		SCount = 0;
 		
 		return;
 	}
@@ -148,6 +149,9 @@ public class AdjacencyListGraph<V,E> implements IGraph<V,E>
 			Vertices.get(dst).OutEdges.add(e);
 		}
 		
+		if(src == dst)
+			SCount++;
+		
 		ECount++;
 		return;
 	}
@@ -201,6 +205,9 @@ public class AdjacencyListGraph<V,E> implements IGraph<V,E>
 		if(ret)
 		{
 			Vertices.get(dst).InEdges.remove(new Edge<V,E>(src,dst,IsDirected()));
+			
+			if(src == dst)
+				SCount--;
 			
 			// We store undirected graphs with their edge in both adjacency lists
 			// If we succeeded in finding one edge in an undirected graph, we need to remove the other
@@ -338,6 +345,7 @@ public class AdjacencyListGraph<V,E> implements IGraph<V,E>
 		
 		VCount = 0;
 		ECount = 0;
+		SCount = 0;
 		
 		return;
 	}
@@ -365,7 +373,12 @@ public class AdjacencyListGraph<V,E> implements IGraph<V,E>
 	
 	public void MakeDirected()
 	{
-		Directed = true; // The undirected version has all of the edges we need already, so we don't have to do anything
+		if(IsDirected())
+			return;
+		
+		ECount = (ECount << 1) - SCount;
+		Directed = true;
+		
 		return;
 	}
 	
@@ -374,14 +387,18 @@ public class AdjacencyListGraph<V,E> implements IGraph<V,E>
 		if(IsUndirected())
 			return;
 		
-		for(Vector2i v : Edges())
+		for(Vector2i v : LINQ.FixSequence(Edges()))
 			if(!ContainsEdge(v.Y,v.X))
 				if(fill)
 					AddEdge(v.Y,v.X,GetEdge(v.X,v.Y));
 				else
 					RemoveEdge(v.X,v.Y);
+			else // We set the data to be whatever we find first since we have no better option than to clobber one piece of data (we could pair it up, but meh)
+				SetEdge(v.Y,v.X,GetEdge(v.X,v.Y));
 		
-		Directed = true;
+		ECount = (ECount + SCount) >> 1;
+		Directed = false;
+		
 		return;
 	}
 	
@@ -395,7 +412,7 @@ public class AdjacencyListGraph<V,E> implements IGraph<V,E>
 		if(vertex < 0)
 			return false;
 		
-		if(vertex >= VCount || Vertices.get(vertex) == null)
+		if(vertex >= Vertices.size() || Vertices.get(vertex) == null)
 			return false;
 		
 		return true;
@@ -412,7 +429,7 @@ public class AdjacencyListGraph<V,E> implements IGraph<V,E>
 		if(vertex < 0)
 			throw new IllegalArgumentException();
 		
-		if(vertex >= VCount || Vertices.get(vertex) == null)
+		if(vertex >= Vertices.size() || Vertices.get(vertex) == null)
 			throw new NoSuchVertexException(vertex);
 		
 		return;
@@ -450,6 +467,11 @@ public class AdjacencyListGraph<V,E> implements IGraph<V,E>
 	 * The number of edges in the graph.
 	 */
 	protected int ECount;
+	
+	/**
+	 * The number of self-loops in the graph.
+	 */
+	protected int SCount;
 	
 	/**
 	 * If true, this is a directed graph.
