@@ -7,6 +7,12 @@ package gamecore;
 public final class GlobalConstants
 {
 	/**
+	 * No one will ever make one of these.
+	 */
+	private GlobalConstants()
+	{return;}
+	
+	/**
 	 * Determines if two doubles are close enough to be considered equal.
 	 * @param d1 The first double.
 	 * @param d2 The second double.

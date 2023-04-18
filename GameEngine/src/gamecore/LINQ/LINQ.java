@@ -6,6 +6,9 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
+import gamecore.datastructures.LinkedList;
+import gamecore.datastructures.maps.Dictionary;
+import gamecore.datastructures.queues.PriorityQueue;
 import gamecore.datastructures.tuples.Pair;
 
 /**
@@ -15,6 +18,12 @@ import gamecore.datastructures.tuples.Pair;
  */
 public final class LINQ
 {
+	/**
+	 * No one will ever make one of these.
+	 */
+	private LINQ()
+	{return;}
+	
 	/**
 	 * Determines if each element of {@code source} satisfies {@code predicate}.
 	 * @param <T> The iterable type.
@@ -373,6 +382,26 @@ public final class LINQ
 	}
 	
 	/**
+	 * Determines the first unique item in {@code items}.
+	 * For example, if {@code items} contains {a,b,c,a,a,b,d}, then it would return c.
+	 * @param <T> The type of things to search.
+	 * @param items The items to search for a unique element in. These entries must not be null.
+	 * @return Returns the first unique item in {@code items} or null if no such item exists.
+	 * @throws NullPointerException Thrown if {@code items} is null or {@code items} contains a null value.
+	 * @implSpec This algorithm runs in average case O(n) time.
+	 */
+	public static <T> T FirstUniqueItem(Iterable<? extends T> items)
+	{
+		Dictionary<T,Integer> counts = ItemCount(items);
+		
+		for(T t : items)
+			if(counts.Get(t) == 1)
+				return t;
+		
+		return null;
+	}
+	
+	/**
 	 * Fixes a sequence so that the backing structure the iterable came from may be changed without affecting the iteration.
 	 * @param source The source sequence.
 	 * @return Returns a new sequence that iterates independently of the source.
@@ -458,6 +487,62 @@ public final class LINQ
 	}
 	
 	/**
+	 * Counts the number of each item in {@code items}.
+	 * For example, if {@code items} contains {a,b,c,a,a,b}, then it would create the mapping {a -> 3,b -> 2,c -> 1}.
+	 * @param <T> The type of things to count.
+	 * @param items The items to count. These entries must not be null.
+	 * @return Returns a dictionary containing the count of each each item in {@code items}.
+	 * @throws NullPointerException Thrown if {@code items} is null or {@code items} contains a null value.
+	 * @implSpec This algorithm runs in average case O(n) time.
+	 */
+	public static <T> Dictionary<T,Integer> ItemCount(Iterable<? extends T> items)
+	{
+		Dictionary<T,Integer> ret = new Dictionary<T,Integer>();
+		
+		for(T t : items)
+		{
+			Integer c = ret.TryGet(t).Item2;
+			
+			if(c == null)
+				ret.Add(t,1);
+			else
+				ret.Put(t,c + 1);
+		}
+		
+		return ret;
+	}
+	
+	/**
+	 * Determines the {@code k} smallest elements of {@code items}.
+	 * For example, if {@code k} = 3, {@code items} contains {1,3,6,2,7}, and {@code cmp} is the natural ordering, then the {@code k} smallest elements are 1, 2, and 3.
+	 * These elements are guaranteed to appear in ascending order.
+	 * @param <T> The type of things to search.
+	 * @param items The items to search for small elements in. These entries can be null if {@code cmp} knows how to compare null elements.
+	 * @param cmp The means by which elements are compared.
+	 * @param k The number of small elements we want to obtain.
+	 * @return Returns an iterable list of {@code k} smallest elements of {@code items}. These must be iterated in ascending order.
+	 * @throws NullPointerException Thrown if {@code items} or {@code cmp} is null.
+	 * @throws IllegalArgumentException Thrown if {@code k} is negative or if it is larger than the number of elements in {@code items}.
+	 * @implSpec The algorithm runs in worst case O(n + k log n) time.
+	 */
+	public static <T> Iterable<T> KthSmallestElements(Iterable<? extends T> items, Comparator<T> cmp, int k)
+	{
+		if(items == null || cmp == null)
+			throw new NullPointerException();
+		
+		if(k < 0 || k >= LINQ.Count(items))
+			throw new IllegalArgumentException();
+		
+		PriorityQueue<T> heap = new PriorityQueue<T>(cmp,items);
+		LinkedList<T> ret = new LinkedList<T>();
+		
+		for(int i = 0;i < k;i++)
+			ret.AddLast(heap.Dequeue());
+		
+		return ret;
+	}
+	
+	/**
 	 * Finds the last index of {@code target} in {@code source}.
 	 * @param <T> The iterable type.
 	 * @param source The source sequence.
@@ -516,6 +601,29 @@ public final class LINQ
 			throw new IndexOutOfBoundsException();
 		
 		return ret;
+	}
+	
+	/**
+	 * Determines the majority element of {@code items}.
+	 * A <b>majority element</b> of a set is an element that appears more than {@code |items|}/2 times.
+	 * For example, if {@code items} contains {a,b,c,a,a,b}, then a is <b>not</b> the majority element because it only appears 3 times, and 3 ≯ 6/2.
+	 * However, if {@code items} contains {a,b,c,a,a,b,a}, then a <b>is</b> the majority element because it appears 4 times, and 4 ≯ 7/2.
+	 * @param <T> The type of things to search.
+	 * @param items The items to search for a majority element in. These entries must not be null.
+	 * @return Returns the unique majority element if one exists or null otherwise.
+	 * @throws NullPointerException Thrown if {@code items} is null or {@code items} contains a null value.
+	 * @implSpec This algorithm runs in average case O(n) time.
+	 */
+	public static <T> T MajorityElement(Iterable<? extends T> items)
+	{
+		Dictionary<T,Integer> counts = ItemCount(items);
+		int majority_size = LINQ.Count(items) >> 1;
+		
+		for(T t : items)
+			if(counts.Get(t) > majority_size)
+				return t;
+		
+		return null;
 	}
 	
 	/**
