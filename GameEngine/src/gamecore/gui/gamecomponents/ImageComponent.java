@@ -11,13 +11,11 @@ import java.net.URL;
 import javax.imageio.ImageIO;
 import javax.imageio.stream.ImageInputStream;
 
-import gamecore.IDrawable;
-
 /**
  * A component that draws an image.
  * @author Dawn Nye
  */
-public class ImageComponent extends AffineComponent implements IDrawable
+public class ImageComponent extends DrawableComponent
 {
 	/**
 	 * Creates an empty image component.
@@ -262,12 +260,6 @@ public class ImageComponent extends AffineComponent implements IDrawable
 	public boolean Disposed()
 	{return Disposed;}
 	
-	public void Draw()
-	{
-		repaint();
-		return;
-	}
-	
 	/**
 	 * Sets the dimensions of this component.
 	 * @param w The width.
@@ -330,7 +322,7 @@ public class ImageComponent extends AffineComponent implements IDrawable
 	@Override public void paint(Graphics g)
 	{
 		if(Show && img != null)
-			((Graphics2D)g).drawImage(img,GetTransformation(true),null);
+			((Graphics2D)g).drawImage(img,GetWorldViewTransformation(true),null);
 		
 		super.paint(g);
 		return;
