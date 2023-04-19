@@ -658,6 +658,15 @@ public abstract class GameEngine implements Runnable
 	}
 	
 	/**
+	 * Resets the view matrix to the identity transformation.
+	 */
+	public void ResetView()
+	{
+		View = new Matrix2D();
+		return;
+	}
+	
+	/**
 	 * Determines if the game engine is currently initializing.
 	 * @return Returns true if the game engine is actively initializing and false otherwise.
 	 */
