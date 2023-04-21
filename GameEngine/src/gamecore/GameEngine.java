@@ -10,6 +10,7 @@ import java.util.NoSuchElementException;
 import gamecore.LINQ.LINQ;
 import gamecore.datastructures.LinkedList;
 import gamecore.datastructures.maps.Dictionary;
+import gamecore.datastructures.matrices.Matrix2D;
 import gamecore.datastructures.vectors.Vector2i;
 import gamecore.gui.AbsoluteFrame;
 import gamecore.gui.gamecomponents.DummyComponent;
@@ -74,6 +75,7 @@ public abstract class GameEngine implements Runnable
 	{
 		Game = this;
 		Window = new AbsoluteFrame(title,icon,width,height,bgc);
+		View = new Matrix2D();
 		
 		Initialized = false;
 		Initializing = false;
@@ -131,7 +133,7 @@ public abstract class GameEngine implements Runnable
 		
 		// Force the first paint
 		for(IDrawable d : LINQ.Select(LINQ.Where(GameComponents,c -> c instanceof IDrawable),c -> (IDrawable)c))
-			d.Draw();
+			d.Draw(View);
 		
 		Window.Repaint();
 		
@@ -185,7 +187,7 @@ public abstract class GameEngine implements Runnable
 			
 			// Now force the system to redraw now that everything has updated
 			for(IDrawable d : LINQ.Select(LINQ.Where(GameComponents,c -> c instanceof IDrawable),c -> (IDrawable)c))
-				d.Draw();
+				d.Draw(View);
 			
 			Window.Repaint();
 			
@@ -629,6 +631,42 @@ public abstract class GameEngine implements Runnable
 	{return new Vector2i(Window.getWidth(),Window.getHeight());}
 	
 	/**
+	 * Performs a left multiplication of {@code m} * {@code View} to update the view matrix.
+	 * @param m The matrix to multiply by.
+	 */
+	public void TransformView(Matrix2D m)
+	{
+		TransformView(m,true);
+		return;
+	}
+	
+	/**
+	 * Performs a multiplication of {@code View} by {@code m} to update the view matrix.
+	 * If {@code left} is true, we will left multiply {@code m} * {@code View}.
+	 * If {@code left} is false, we will right multiply {@code View} * {@code m}.
+	 * @param m The matrix to multiply by.
+	 * @param left If true, this will perform a left multiplication on the view matrix. If false, this will perform a right multiplication.
+	 */
+	public void TransformView(Matrix2D m, boolean left)
+	{
+		if(left)
+			View.LeftMultiply(m);
+		else
+			View.RightMultiply(m);
+		
+		return;
+	}
+	
+	/**
+	 * Resets the view matrix to the identity transformation.
+	 */
+	public void ResetView()
+	{
+		View = new Matrix2D();
+		return;
+	}
+	
+	/**
 	 * Determines if the game engine is currently initializing.
 	 * @return Returns true if the game engine is actively initializing and false otherwise.
 	 */
@@ -722,6 +760,11 @@ public abstract class GameEngine implements Runnable
 	 * The services available to the game engine.
 	 */
 	private final Dictionary<Class,Object> Services;
+	
+	/**
+	 * The view matrix.
+	 */
+	private Matrix2D View;
 	
 	/**
 	 * If true, then this engine is initializing.

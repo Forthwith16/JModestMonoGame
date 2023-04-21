@@ -330,6 +330,21 @@ public class Matrix2D
 	{return Translate(t.X,t.Y);}
 	
 	/**
+	 * Creates a translation matrix.
+	 * @param tx The x component of the translation of the matrix.
+	 * @param ty The y component of the translation of the matrix.
+	 */
+	public static Matrix2D Translation(double tx, double ty)
+	{return new Matrix2D().Translate(tx,ty);}
+	
+	/**
+	 * Creates a translation matrix.
+	 * @param t The translation of the matrix.
+	 */
+	public static Matrix2D Translation(Vector2d t)
+	{return new Matrix2D().Translate(t);}
+	
+	/**
 	 * Applies a rotation to this matrix.
 	 * This is equivalent to a left multiplication by a rotation matrix.
 	 * @param angle The angle to rotate by (in radians).
@@ -358,6 +373,13 @@ public class Matrix2D
 		
 		return this;
 	}
+	
+	/**
+	 * Creates a rotation matrix.
+	 * @param angle The rotation angle (in radians).
+	 */
+	public static Matrix2D Rotation(double angle)
+	{return new Matrix2D().Rotate(angle);}
 	
 	/**
 	 * Applies a clean 90 degree rotation {@code times} times.
@@ -420,6 +442,15 @@ public class Matrix2D
 	}
 	
 	/**
+	 * Creates a rotation matrix.
+	 * This will apply a clean 90 degree rotation {@code times} times.
+	 * This is done in a single multiplication.
+	 * @param times The number of 90 degree rotations to perform.
+	 */
+	public static Matrix2D Rotation90(int times)
+	{return new Matrix2D().Rotate90(times);}
+	
+	/**
 	 * Applies a scale factor to this matrix.
 	 * This is equivalent to a left multiplication by a scale matrix.
 	 * @param s The scale factor.
@@ -459,6 +490,28 @@ public class Matrix2D
 	{return Scale(s.X,s.Y);}
 	
 	/**
+	 * Creates a scale matrix.
+	 * @param s The x and y component of the scale of the matrix.
+	 */
+	public static Matrix2D Scaling(double s)
+	{return new Matrix2D().Scale(s);}
+	
+	/**
+	 * Creates a scale matrix.
+	 * @param sx The x component of the scale of the matrix.
+	 * @param sy The y component of the scale of the matrix.
+	 */
+	public static Matrix2D Scaling(double sx, double sy)
+	{return new Matrix2D().Scale(sx,sy);}
+	
+	/**
+	 * Creates a scale matrix.
+	 * @param s The scale of the matrix.
+	 */
+	public static Matrix2D Scaling(Vector2d s)
+	{return new Matrix2D().Scale(s);}
+	
+	/**
 	 * Applies a shear transformation to this matrix.
 	 * This is equivalent to a left multiplication by a shear matrix.
 	 * @param sx The horizontal shear.
@@ -495,6 +548,21 @@ public class Matrix2D
 	 */
 	public Matrix2D Shear(Vector2d s)
 	{return Shear(s.X,s.Y);}
+	
+	/**
+	 * Creates a shear matrix.
+	 * @param sx The x component of the shear of the matrix.
+	 * @param sy The y component of the shear of the matrix.
+	 */
+	public static Matrix2D Shearing(double sx, double sy)
+	{return new Matrix2D().Shear(sx,sy);}
+	
+	/**
+	 * Creates a shear matrix.
+	 * @param s The shear of the matrix.
+	 */
+	public static Matrix2D Shearing(Vector2d s)
+	{return new Matrix2D().Shear(s);}
 	
 	/**
 	 * Performs a transpose.

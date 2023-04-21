@@ -5,13 +5,13 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 
-import gamecore.IDrawable;
+import gamecore.datastructures.matrices.Matrix2D;
 
 /**
  * A component that writes a string.
  * @author Dawn Nye
  */
-public class TextComponent extends AffineComponent implements IDrawable
+public class TextComponent extends DrawableComponent
 {
 	/**
 	 * Creates a new text component.
@@ -24,9 +24,12 @@ public class TextComponent extends AffineComponent implements IDrawable
 		if(text == null)
 			throw new NullPointerException();
 		
+		// Apparently we can't call Font.PLAIN or Color.BLACK when invoking another constructor, so we'll just do this manually I guess
 		Text = text;
 		Font = new Font("Courier",Font.PLAIN,18);
 		Color = Color.BLACK;
+		
+		Camera = new Matrix2D();
 		
 		Display = true;
 		return;
@@ -47,6 +50,8 @@ public class TextComponent extends AffineComponent implements IDrawable
 		Text = text;
 		Font = font;
 		Color = c;
+		
+		Camera = new Matrix2D();
 		
 		Display = true;
 		return;
@@ -73,12 +78,6 @@ public class TextComponent extends AffineComponent implements IDrawable
 	public boolean Disposed()
 	{return Disposed;}
 	
-	public void Draw()
-	{
-		repaint();
-		return;
-	}
-	
 	@Override public void paint(Graphics g)
 	{
 		if(Display && Text != null)
@@ -87,7 +86,7 @@ public class TextComponent extends AffineComponent implements IDrawable
 			
 			g2.setFont(Font);
 			g2.setColor(Color);
-			g2.setTransform(GetTransformation(true));
+			g2.setTransform(GetWorldViewTransformation(true));
 			
 			g2.drawString(Text,0,0);
 		}
