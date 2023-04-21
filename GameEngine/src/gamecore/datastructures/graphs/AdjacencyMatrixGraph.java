@@ -8,6 +8,12 @@ import gamecore.datastructures.maps.Dictionary;
 import gamecore.datastructures.queues.Stack;
 import gamecore.datastructures.vectors.Vector2i;
 
+/**
+ * An adjacency matrix backed implementation of {@code IGraph}
+ * @author Dawn Nye
+ * @param <V> The data type to store in vertices.
+ * @param <E> The data type to store in edges.
+ */
 public class AdjacencyMatrixGraph<V,E> implements IGraph<V,E>
 {
 	/**
