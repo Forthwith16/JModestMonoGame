@@ -510,7 +510,7 @@ public abstract class GameEngine implements Runnable
 	 * @return Returns the old service of {@code service}'s type if one exists or {@code service} otherwise.
 	 * @throws NullPointerException Thrown if {@code service} is null.
 	 */
-	public <T> T PutService(Class type, T service)
+	public <T> T PutService(T service)
 	{return (T)Services.Put(service.getClass(),service);}
 	
 	/**
