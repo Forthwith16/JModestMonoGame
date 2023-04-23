@@ -594,6 +594,23 @@ public abstract class GameEngine implements Runnable
 	}
 	
 	/**
+	 * Sets the game window name.
+	 * @param name The name to set the window.
+	 * @throws NullPointerException Thrown if {@code name} is null.
+	 */
+	public void SetWindowName(String name)
+	{
+		Window.setTitle(name);
+		return;
+	}
+	
+	/**
+	 * Gets the title of the game window.
+	 */
+	public String GetWindowName()
+	{return Window.getTitle();}
+	
+	/**
 	 * Sets the game window size to have the specified dimensions.
 	 * @param dim The dimensions of the game window. Width is the first component and height is the second.
 	 * @throws IllegalArgumentException Thrown if either component of {@code dim} is nonpositive.

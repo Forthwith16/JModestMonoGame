@@ -5,8 +5,6 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 
-import gamecore.datastructures.matrices.Matrix2D;
-
 /**
  * A component that writes a string.
  * @author Dawn Nye
@@ -21,6 +19,8 @@ public class TextComponent extends DrawableComponent
 	 */
 	public TextComponent(String text)
 	{
+		super();
+		
 		if(text == null)
 			throw new NullPointerException();
 		
@@ -28,8 +28,6 @@ public class TextComponent extends DrawableComponent
 		Text = text;
 		Font = new Font("Courier",Font.PLAIN,18);
 		Color = Color.BLACK;
-		
-		Camera = new Matrix2D();
 		
 		Display = true;
 		return;
@@ -44,14 +42,14 @@ public class TextComponent extends DrawableComponent
 	 */
 	public TextComponent(String text, Font font, Color c)
 	{
+		super();
+		
 		if(text == null || font == null || c == null)
 			throw new NullPointerException();
 		
 		Text = text;
 		Font = font;
 		Color = c;
-		
-		Camera = new Matrix2D();
 		
 		Display = true;
 		return;
@@ -152,6 +150,18 @@ public class TextComponent extends DrawableComponent
 		Font = f;
 		return;
 	}
+	
+	/**
+	 * Gets the width of the current text in pixels.
+	 */
+	public int StringWidth()
+	{return getFontMetrics(Font).stringWidth(Text);}
+	
+	/**
+	 * Gets the height of the current text in pixels.
+	 */
+	public int StringHeight()
+	{return getFontMetrics(Font).getHeight();}
 	
 	/**
 	 * Obtains the current color.

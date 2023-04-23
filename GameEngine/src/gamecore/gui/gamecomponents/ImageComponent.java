@@ -287,7 +287,7 @@ public class ImageComponent extends DrawableComponent
 		if(img == null)
 			throw new IllegalStateException();
 		
-		SetDimensions(img.getWidth(null),img.getHeight(null));
+		SetDimensions(GetImageWidth(),GetImageHeight());
 		return;
 	}
 	
