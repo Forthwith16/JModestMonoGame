@@ -21,7 +21,6 @@ public class RectangleComponent extends ImageComponent
 	public RectangleComponent(int w, int h, Color c)
 	{
 		super(CreateImage(w,h,c));
-		
 		return;
 	}
 	
@@ -36,7 +35,6 @@ public class RectangleComponent extends ImageComponent
 	public RectangleComponent(int w, int h, ColorFunction f)
 	{
 		super(CreateImage(w,h,f));
-		
 		return;
 	}
 	
@@ -102,7 +100,7 @@ public class RectangleComponent extends ImageComponent
 		{
 			return (x,y) ->
 			{
-				float t = x / w;
+				float t = x / (w - 1.0f);
 				float t1 = 1.0f - t;
 				
 				return new Color((int)(l.getRed() * t + r.getRed() * t1),
@@ -124,13 +122,13 @@ public class RectangleComponent extends ImageComponent
 		{
 			return (x,y) ->
 			{
-				float t0 = y / h;
+				float t0 = y / (h - 1.0f);
 				float t1 = 1.0f - t0;
 				
-				return new Color((int)(t.getRed() * t0 + b.getRed() * t1),
-							  (int)(t.getGreen() * t0 + b.getGreen() * t1),
-							  (int)(t.getBlue() * t0 + b.getBlue() * t1),
-							  (int)(t.getAlpha() * t0 + b.getAlpha() * t1));
+				return new Color((int)(t.getRed() * t1 + b.getRed() * t0),
+							  (int)(t.getGreen() * t1 + b.getGreen() * t0),
+							  (int)(t.getBlue() * t1 + b.getBlue() * t0),
+							  (int)(t.getAlpha() * t1 + b.getAlpha() * t0));
 			};
 		}
 	}

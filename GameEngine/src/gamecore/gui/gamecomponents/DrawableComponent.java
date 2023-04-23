@@ -67,7 +67,7 @@ public abstract class DrawableComponent extends AffineComponent implements IDraw
 	 */
 	public void UseCamera(boolean no)
 	{
-		IgnoreCamera = no;
+		IgnoreCamera = !no;
 		return;
 	}
 	
