@@ -758,10 +758,12 @@ public abstract class GameEngine implements Runnable
 	 * Obtains the game engine.
 	 * There should only ever be one game engine running, and this is it.
 	 * If there is more than one running, then the last constructed game engine is in this position.
+	 * @param <T> The game type.
 	 * @return Returns the executing game engine.
+	 * @throws ClassCastException Thrown if the game is not of {@code T} type.
 	 */
-	public static GameEngine Game()
-	{return Game;}
+	public static <T extends GameEngine> T Game()
+	{return (T)Game;}
 	
 	/**
 	 * The game window.
