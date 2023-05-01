@@ -19,7 +19,7 @@ public class BinarySearchTree<T> extends AbstractBinarySearchTree<T,BinarySearch
 	 * @param cmp The means by which we compare elements of the tree.
 	 * @throws NullPointerException Thrown if {@code cmp} is null.
 	 */
-	public BinarySearchTree(Comparator<T> cmp)
+	public BinarySearchTree(Comparator<? super T> cmp)
 	{
 		super(cmp);
 		return;
@@ -31,7 +31,7 @@ public class BinarySearchTree<T> extends AbstractBinarySearchTree<T,BinarySearch
 	 * @param cmp The means by which we compare elements of the tree.
 	 * @throws NullPointerException Thrown if {@code cmp} or {@code seed} is null.
 	 */
-	public BinarySearchTree(Iterable<? extends T> seed, Comparator<T> cmp)
+	public BinarySearchTree(Iterable<? extends T> seed, Comparator<? super T> cmp)
 	{
 		super(seed,cmp);
 		return;

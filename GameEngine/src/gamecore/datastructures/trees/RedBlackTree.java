@@ -18,7 +18,7 @@ public class RedBlackTree<T> extends AbstractRedBlackTree<T,RedBlackTreeNode<T>>
 	 * @param cmp The means by which we compare elements of the tree.
 	 * @throws NullPointerException Thrown if {@code cmp} is null.
 	 */
-	public RedBlackTree(Comparator<T> cmp)
+	public RedBlackTree(Comparator<? super T> cmp)
 	{
 		super(cmp);
 		return;
@@ -30,7 +30,7 @@ public class RedBlackTree<T> extends AbstractRedBlackTree<T,RedBlackTreeNode<T>>
 	 * @param cmp The means by which we compare elements of the tree.
 	 * @throws NullPointerException Thrown if {@code cmp} or {@code seed} is null.
 	 */
-	public RedBlackTree(Iterable<? extends T> seed, Comparator<T> cmp)
+	public RedBlackTree(Iterable<? extends T> seed, Comparator<? super T> cmp)
 	{
 		super(seed,cmp);
 		return;

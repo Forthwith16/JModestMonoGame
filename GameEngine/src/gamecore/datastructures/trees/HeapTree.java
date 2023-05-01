@@ -26,7 +26,7 @@ public class HeapTree<T> extends CompleteBinaryTree<T>
 	 * @param cmp The comparator used to sort the heap. The heap will place the smallest item at the top.
 	 * @throws NullPointerException Thrown if {@code cmp} is null.
 	 */
-	public HeapTree(Comparator<T> cmp)
+	public HeapTree(Comparator<? super T> cmp)
 	{
 		super();
 		
@@ -46,7 +46,7 @@ public class HeapTree<T> extends CompleteBinaryTree<T>
 	 * @param cmp The comparator used to sort the heap. The heap will place the smallest item at the top.
 	 * @throws NullPointerException Thrown if {@code cmp} or {@code seed} is null.
 	 */
-	public HeapTree(Iterable<? extends T> seed, Comparator<T> cmp)
+	public HeapTree(Iterable<? extends T> seed, Comparator<? super T> cmp)
 	{
 		super();
 		

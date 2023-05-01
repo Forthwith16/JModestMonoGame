@@ -32,7 +32,7 @@ public abstract class AbstractBinarySearchTree<T,NODE extends AbstractBinaryTree
 	 * @param cmp The means by which we compare elements of the tree.
 	 * @throws NullPointerException Thrown if {@code cmp} is null.
 	 */
-	protected AbstractBinarySearchTree(Comparator<T> cmp)
+	protected AbstractBinarySearchTree(Comparator<? super T> cmp)
 	{
 		super();
 		
@@ -49,7 +49,7 @@ public abstract class AbstractBinarySearchTree<T,NODE extends AbstractBinaryTree
 	 * @param cmp The means by which we compare elements of the tree.
 	 * @throws NullPointerException Thrown if {@code cmp} or {@code seed} is null.
 	 */
-	protected AbstractBinarySearchTree(Iterable<? extends T> seed, Comparator<T> cmp)
+	protected AbstractBinarySearchTree(Iterable<? extends T> seed, Comparator<? super T> cmp)
 	{
 		super(); // We can't initialize Comparer (even by cheating) before calling the base constructor, so we have to settle for the default base constructor
 		
@@ -217,5 +217,5 @@ public abstract class AbstractBinarySearchTree<T,NODE extends AbstractBinaryTree
 	/**
 	 * Compares {@code T} types.
 	 */
-	protected Comparator<T> Comparer;
+	protected Comparator<? super T> Comparer;
 }
