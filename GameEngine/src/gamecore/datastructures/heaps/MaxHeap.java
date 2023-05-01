@@ -14,7 +14,7 @@ public class MaxHeap<T> implements IHeap<T>
 	 * Creates a new max heap with the given ordering.
 	 * @param cmp The means by which items are sorted.
 	 */
-	public MaxHeap(Comparator<T> cmp)
+	public MaxHeap(Comparator<? super T> cmp)
 	{
 		Heap = new MinHeap<T>((a,b) -> -cmp.compare(a,b));
 		return;
@@ -25,7 +25,7 @@ public class MaxHeap<T> implements IHeap<T>
 	 * @param seed The initial set of objects to fill this heap with.
 	 * @param cmp The means by which items are sorted.
 	 */
-	public MaxHeap(Iterable<? extends T> seed, Comparator<T> cmp)
+	public MaxHeap(Iterable<? extends T> seed, Comparator<? super T> cmp)
 	{
 		Heap = new MinHeap<T>(seed,(a,b) -> -cmp.compare(a,b));
 		return;

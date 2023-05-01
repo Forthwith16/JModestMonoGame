@@ -19,7 +19,7 @@ public class PriorityQueue<T> implements IQueue<T>
 	 * Low priority values occur first.
 	 * @param cmp The means by which items are compared.
 	 */
-	public PriorityQueue(Comparator<T> cmp)
+	public PriorityQueue(Comparator<? super T> cmp)
 	{
 		this(cmp,true);
 		return;
@@ -30,7 +30,7 @@ public class PriorityQueue<T> implements IQueue<T>
 	 * @param cmp The means by which items are compared.
 	 * @param min If true, then low prioritiey values occur before high prioritiey values. If false, then high prioritiey values will occur first instead.
 	 */
-	public PriorityQueue(Comparator<T> cmp, boolean min)
+	public PriorityQueue(Comparator<? super T> cmp, boolean min)
 	{
 		if(min)
 			Heap = new MinHeap<T>(cmp);
@@ -46,7 +46,7 @@ public class PriorityQueue<T> implements IQueue<T>
 	 * @param cmp The means by which items are compared.
 	 * @param seed The initial elements to add to the queue.
 	 */
-	public PriorityQueue(Comparator<T> cmp, Iterable<? extends T> seed)
+	public PriorityQueue(Comparator<? super T> cmp, Iterable<? extends T> seed)
 	{
 		this(cmp,seed,true);
 		return;
@@ -58,7 +58,7 @@ public class PriorityQueue<T> implements IQueue<T>
 	 * @param seed The initial elements to add to the queue.
 	 * @param min If true, then low prioritiey values occur before high prioritiey values. If false, then high prioritiey values will occur first instead.
 	 */
-	public PriorityQueue(Comparator<T> cmp, Iterable<? extends T> seed, boolean min)
+	public PriorityQueue(Comparator<? super T> cmp, Iterable<? extends T> seed, boolean min)
 	{
 		if(min)
 			Heap = new MinHeap<T>(seed,cmp);

@@ -18,7 +18,7 @@ public class MinHeap<T> implements IHeap<T>
 	 * Creates a new min heap with the given ordering.
 	 * @param cmp The means by which items are sorted.
 	 */
-	public MinHeap(Comparator<T> cmp)
+	public MinHeap(Comparator<? super T> cmp)
 	{
 		Ordering = cmp;
 		Root = null;
@@ -31,7 +31,7 @@ public class MinHeap<T> implements IHeap<T>
 	 * @param seed The initial set of objects to fill this heap with.
 	 * @param cmp The means by which items are sorted.
 	 */
-	public MinHeap(Iterable<? extends T> seed, Comparator<T> cmp)
+	public MinHeap(Iterable<? extends T> seed, Comparator<? super T> cmp)
 	{
 		Ordering = cmp;
 
@@ -406,7 +406,7 @@ public class MinHeap<T> implements IHeap<T>
 	/**
 	 * The ordering of items.
 	 */
-	protected Comparator<T> Ordering;
+	protected Comparator<? super T> Ordering;
 
 	/**
 	 * The root node of the heap.
@@ -460,7 +460,7 @@ public class MinHeap<T> implements IHeap<T>
 		 * @param root The root of the heap.
 		 * @param cmp Compares things of T type.
 		 */
-		public MinHeapEnumerator(Node root, Comparator<T> cmp)
+		public MinHeapEnumerator(Node root, Comparator<? super T> cmp)
 		{
 			Root = root;
 			q = new MinHeap<Node>((n1,n2) -> cmp.compare(n1.Item,n2.Item));
