@@ -352,6 +352,9 @@ public class Animation implements IUpdatable, IObservable<TimeEvent>
 	
 	public void Initialize()
 	{
+		if(Initialized())
+			return;
+		
 		Clock.Initialize();
 		
 		Initialized = true;

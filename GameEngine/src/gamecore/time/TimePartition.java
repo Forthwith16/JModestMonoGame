@@ -105,6 +105,9 @@ public class TimePartition implements IUpdatable, IObservable<TimeEvent>
 	
 	public void Initialize()
 	{
+		if(Initialized())
+			return;
+		
 		Play();
 		
 		Initialized = true;

@@ -36,6 +36,7 @@ public class AnimatedComponent extends ImageComponent implements IUpdatable, IOb
 		{
 			TheAnimation.Initialize();
 			TheAnimation.Subscribe(this);
+			SetSelectedImage(TheAnimation.CurrentFrame());
 		}
 		
 		Initialized = true;
@@ -96,6 +97,27 @@ public class AnimatedComponent extends ImageComponent implements IUpdatable, IOb
 			img = null;
 		
 		SelectedIndex = index;
+		return;
+	}
+	
+	/**
+	 * Swaps the current animation out for {@code a}.
+	 * @param a The new animation for this component. If {@code a} is not initialized, it becomes initialized.
+	 * @implNote The old animation is not dispsoed of or otherwise destructed.
+	 */
+	public void SwapAnimations(Animation a)
+	{
+		TheAnimation.Unsubscribe(this);
+		
+		TheAnimation = a;
+		
+		if(a != null)
+		{
+			TheAnimation.Initialize();
+			TheAnimation.Subscribe(this);
+			SetSelectedImage(TheAnimation.CurrentFrame());
+		}
+		
 		return;
 	}
 	
