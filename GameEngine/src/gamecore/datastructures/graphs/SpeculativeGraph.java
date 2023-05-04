@@ -135,13 +135,15 @@ public class SpeculativeGraph<V,E> extends AdjacencyMatrixGraph<V,E> implements 
 			NotifyAll(e);
 			
 			// Merge like you've never merged before!
-			// First, we need to copy all the incoming edges to the alias vertex into the real vertex (keep old data in already existant edges)
-			for(Vector2i v : InboundEdges(p.Y))
-				AddEdge(v.X,p.X,GetEdge(v.X,v.Y)); // Add will fail if the edge already exists
-			
-			// Next, we need to copy all the outgoing edges to the alias vertex into the real vertex (keep old data in already existant edges)
+			// First, we need to copy all the outgoing edges to the alias vertex into the real vertex (keep old data in already existant edges)
 			for(Vector2i v : OutboundEdges(p.Y))
 				AddEdge(p.X,v.Y,GetEdge(v.X,v.Y)); // Add will fail if the edge already exists
+			
+			// Next, we need to copy all the incoming edges to the alias vertex into the real vertex (keep old data in already existant edges)
+			// We only need to do this if the graph is directed
+			if(IsDirected())
+				for(Vector2i v : InboundEdges(p.Y))
+					AddEdge(v.X,p.X,GetEdge(v.X,v.Y)); // Add will fail if the edge already exists
 			
 			// Lastly, we need to destroy the alias vertex (this will remove all of its edges as well)
 			RemoveVertex(p.Y);
