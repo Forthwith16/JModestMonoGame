@@ -1,7 +1,13 @@
 package gamecore.datastructures.graphs;
 
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+
+import gamecore.datastructures.HashTable;
 import gamecore.datastructures.graphs.exceptions.NoSuchEdgeException;
 import gamecore.datastructures.graphs.exceptions.NoSuchVertexException;
+import gamecore.datastructures.queues.IQueue;
+import gamecore.datastructures.queues.Queue;
 import gamecore.datastructures.vectors.Vector2i;
 
 /**
@@ -144,12 +150,65 @@ public interface IGraph<V,E>
 	public Iterable<Vector2i> InboundEdges(int vertex);
 	
 	/**
+	 * Gets all of the vertex IDs of vertices reachable from {@code vertex}.
+	 * @param vertex The vertex to obtain all reachable vertex IDs of.
+	 * @return Returns an iterable list of all reachable vertex IDs from {@code vertex}.
+	 */
+	public default Iterable<Integer> ComponentVertexIDs(int vertex)
+	{
+		return new Iterable<Integer>()
+		{
+			public Iterator<Integer> iterator()
+			{
+				return new Iterator<Integer>()
+				{
+					@Override public boolean hasNext()
+					{
+						if(Q == null)
+						{
+							Visited = new HashTable<Integer>();
+							
+							Q = new Queue<Integer>();
+							Q.Add(vertex);
+							
+							return true;
+						}
+						
+						while(!Q.IsEmpty() && Visited.Contains(Q.Front()))
+							Q.Dequeue();
+						
+						return !Q.IsEmpty();
+					}
+					
+					@Override public Integer next()
+					{
+						if(!hasNext())
+							throw new NoSuchElementException();
+						
+						Integer ret = Q.Dequeue();
+						Visited.add(ret);
+						
+						for(Integer i : Neighbors(ret))
+							if(!Visited.Contains(i))
+								Q.Add(i);
+						
+						return ret;
+					}
+					
+					private IQueue<Integer> Q;
+					private HashTable<Integer> Visited;
+				};
+			}
+		};
+	}
+	
+	/**
 	 * Returns an iterable list of all currently utilized vertex IDs in the graph.
 	 */
 	public Iterable<Integer> VertexIDs();
 	
 	/**
-	 * Returns an iterable list of all edges in the graph.
+	 * Returns an iterable list of all vertex data in the graph.
 	 */
 	public Iterable<V> Vertices();
 	
