@@ -107,7 +107,7 @@ public interface ITree<T> extends ICollection<T>
 	@FunctionalInterface public interface TraversalFunction<E>
 	{
 		/**
-		 * Visis a node during a traversal of a tree.
+		 * Visits a node during a traversal of a tree.
 		 * @param e The data inside of the node currently being visited.
 		 * @param index During a traversal, the node currently being visited is the {@code index}th node visited.
 		 * @param depth During a traversal, the node currently being visited is at (zero-index) dpeth {@code depth} in the tree.
