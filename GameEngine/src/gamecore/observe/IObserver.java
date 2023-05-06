@@ -17,7 +17,8 @@ public interface IObserver<T>
 	 * Called when an error occurs.
 	 * @param e The observed error.
 	 */
-	public void OnError(Exception e);
+	public default void OnError(Exception e)
+	{return;}
 	
 	/**
 	 * Called when the observable has finished sending observations.
