@@ -40,6 +40,7 @@ public class SpeculativeGraph<V,E> extends AdjacencyMatrixGraph<V,E> implements 
 		Inspector = inspector;
 		Subscribers = new LinkedList<IObserver<MergeEvent<V,E>>>();
 		
+		MergeInProgress = false;
 		return;
 	}
 	
@@ -118,6 +119,12 @@ public class SpeculativeGraph<V,E> extends AdjacencyMatrixGraph<V,E> implements 
 	 */
 	protected void TryMerge(int id1, int id2)
 	{
+		// If we're already merging, don't start up another merge
+		if(MergeInProgress)
+			return;
+		
+		MergeInProgress = true;
+		
 		// Find the initial merge (if we have one at all)
 		Vector2i p = Inspector.FindCommonVertex(this,id1,id2,0);
 		
@@ -163,6 +170,7 @@ public class SpeculativeGraph<V,E> extends AdjacencyMatrixGraph<V,E> implements 
 			p = Inspector.FindCommonVertex(this,id1,id2,merge);
 		}
 		
+		MergeInProgress = false;
 		return;
 	}
 	
@@ -201,6 +209,11 @@ public class SpeculativeGraph<V,E> extends AdjacencyMatrixGraph<V,E> implements 
 	protected LinkedList<IObserver<MergeEvent<V,E>>> Subscribers;
 	
 	/**
+	 * If true, there is a merge in progress and we don't want to try merging things that we're already merging as they get merged.
+	 */
+	protected boolean MergeInProgress;
+	
+	/**
 	 * A function used to identify common vertices between unconnected components.
 	 * @author Dawn Nye
 	 * @param <V> The type of data in the vertices.
@@ -222,6 +235,19 @@ public class SpeculativeGraph<V,E> extends AdjacencyMatrixGraph<V,E> implements 
 		 * @implNote Note that {@code id1} and {@code id2} will both be -1 only when a vertex is removed.
 		 */
 		public Vector2i FindCommonVertex(IGraph<V,E> g, int id1, int id2, int merge_num);
+	}
+	
+	
+	@FunctionalInterface public interface VertexSelector<V,E>
+	{
+		/**
+		 * Selects which vertex data should survive when the vertices with IDs {@code id1} and {@code id2} are merged.
+		 * @param g The graph the merge is being performed in.
+		 * @param id1 The vertex 
+		 * @param id2
+		 * @return
+		 */
+		public V SelectVertexData(IGraph<V,E> g, int id1, int id2);
 	}
 	
 	/**
