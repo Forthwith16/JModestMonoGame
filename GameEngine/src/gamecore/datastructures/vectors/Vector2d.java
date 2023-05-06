@@ -243,6 +243,13 @@ public class Vector2d
 	public Vector2d Normalized()
 	{return Divide(Magnitude());}
 	
+	/**
+	 * Reverses the components of this vector so that the y component is now the x component and the x component is now the y component.
+	 * @return Returns a new vector with this vector's components reversed.
+	 */
+	public Vector2d Reversed()
+	{return new Vector2d(Y,X);}
+	
 	@Override public String toString()
 	{return "<" + X + "," + Y + ">";}
 	

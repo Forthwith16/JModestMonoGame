@@ -11,10 +11,16 @@ import gamecore.observe.IObserver;
  * <br><br>
  * Note that because this involves removing at least one vertex, vertex IDs will be lost in the merging process.
  * When this happens, the smaller vertex ID will always be the one kept.
- * If their data is distinct, then only the data of the vertex with the smaller ID will be kept.
+ * Their data will be merged together using a function specified at construction time.
+ * This data update will occur immediately after the function is called rather than delaying action until after all other data updates have been collected.
+ * This data update occurs before edge data updates.
  * <br><br>
  * Similarly, if two vertices are merged into a single vertex, then their edges are merged together as well.
- * If there are two edges going to the same destination (or coming from the same source), then the edge (and its data) from the smaller vertex ID is the one kept.
+ * Edge data is merged together similarly to vertex data by using a function specified at construction time.
+ * These data updates will occur immediately after the function is called rather than delaying action until after all other data updates have been collected.
+ * These data updates occur after the vertex data update.
+ * In a directed graph, outbound edges are also updated before inbound edges.
+ * Internal to each category, alias edges (those between the vertex that will not survive the merge and another vertex) are updated before nonalias edges.
  * <br><br>
  * Notifactions of merge events for this graph are sent out both before and after a merge completes.
  * @author Dawn Nye
@@ -28,9 +34,11 @@ public class SpeculativeGraph<V,E> extends AdjacencyMatrixGraph<V,E> implements 
 	 * Creates a new vision graph.
 	 * @param dir If true, this will be a directed graph. If false, this will be an undirected graph.
 	 * @param inspector The means by which common vertices are identified between graphs.
+	 * @param v_select The means by which vertex data is merged together.
+	 * @param e_select The means by which edge data is merged together.
 	 * @throws NullPointerException Thrown if {@code inspector} is null.
 	 */
-	public SpeculativeGraph(boolean dir, GraphAnalyzer<V,E> inspector)
+	public SpeculativeGraph(boolean dir, GraphAnalyzer<V,E> inspector, VertexSelector<V,E> v_select, EdgeSelector<V,E> e_select)
 	{
 		super(dir);
 		
@@ -38,9 +46,12 @@ public class SpeculativeGraph<V,E> extends AdjacencyMatrixGraph<V,E> implements 
 			throw new NullPointerException();
 		
 		Inspector = inspector;
-		Subscribers = new LinkedList<IObserver<MergeEvent<V,E>>>();
+		VSelect = v_select;
+		ESelect = e_select;
 		
+		Subscribers = new LinkedList<IObserver<MergeEvent<V,E>>>();
 		MergeInProgress = false;
+		
 		return;
 	}
 	
@@ -144,27 +155,42 @@ public class SpeculativeGraph<V,E> extends AdjacencyMatrixGraph<V,E> implements 
 			// Notify all observers
 			NotifyAll(e);
 			
+			// Update the vertex data first, as it's probably independnet of the edge data
+			SetVertex(p.X,VSelect.SelectVertexData(this,p.X,p.Y));
+			
 			// Merge like you've never merged before!
 			// First, we need to copy all the outgoing edges to the alias vertex into the real vertex (keep old data in already existant edges)
 			for(Vector2i v : OutboundEdges(p.Y))
-				AddEdge(p.X,v.Y,GetEdge(v.X,v.Y)); // Add will fail if the edge already exists
+				PutEdge(p.X,v.Y,ESelect.SelectEdgeData(this,new Vector2i(p.X,v.Y),v));
+			
+			// We need to update nonalias edges as well if we haven't already
+			for(Vector2i v : OutboundEdges(p.X))
+				if(!ContainsEdge(p.Y,v.Y))
+					PutEdge(p.X,v.Y,ESelect.SelectEdgeData(this,v,new Vector2i(p.Y,v.Y)));
 			
 			// Next, we need to copy all the incoming edges to the alias vertex into the real vertex (keep old data in already existant edges)
 			// We only need to do this if the graph is directed
 			if(IsDirected())
+			{
 				for(Vector2i v : InboundEdges(p.Y))
-					AddEdge(v.X,p.X,GetEdge(v.X,v.Y)); // Add will fail if the edge already exists
+					PutEdge(v.X,p.X,ESelect.SelectEdgeData(this,new Vector2i(v.X,p.X),v)); // Add will fail if the edge already exists
+			
+				// We need to update nonalias edges as well if we haven't already
+				for(Vector2i v : InboundEdges(p.X))
+					if(!ContainsEdge(v.X,p.Y))
+						PutEdge(v.X,p.X,ESelect.SelectEdgeData(this,v,new Vector2i(v.Y,p.Y)));
+			}
 			
 			// Lastly, we need to destroy the alias vertex (this will remove all of its edges as well)
 			RemoveVertex(p.Y);
 			
-			// Update the id parameters now that we have something to merge
-			id1 = p.X; // This may be different than the ID we provided
-			id2 = -1; // This is always -1 since we can only merge vertex IDs now, never modify the edge set
-			
 			// Now that we've merged, we'll notify our observers of that fact
 			e = new MergeEvent<V,E>(this,id1,id2,true,merge);
 			NotifyAll(e);
+			
+			// Update the id parameters now that we have something to merge
+			id1 = p.X; // This may be different than the ID we provided
+			id2 = -1; // This is always -1 since we can only merge vertex IDs now, never modify the edge set
 			
 			// Now check to see if we have anything else we need to merge
 			p = Inspector.FindCommonVertex(this,id1,id2,merge);
@@ -204,6 +230,16 @@ public class SpeculativeGraph<V,E> extends AdjacencyMatrixGraph<V,E> implements 
 	protected GraphAnalyzer<V,E> Inspector;
 	
 	/**
+	 * Used to merge vertex data together.
+	 */
+	protected VertexSelector<V,E> VSelect;
+	
+	/**
+	 * Used to merge edge data together.
+	 */
+	protected EdgeSelector<V,E> ESelect;
+	
+	/**
 	 * The observers of this class.
 	 */
 	protected LinkedList<IObserver<MergeEvent<V,E>>> Subscribers;
@@ -237,21 +273,50 @@ public class SpeculativeGraph<V,E> extends AdjacencyMatrixGraph<V,E> implements 
 		public Vector2i FindCommonVertex(IGraph<V,E> g, int id1, int id2, int merge_num);
 	}
 	
-	
+	/**
+	 * Encapsulates vertex data selection when two vertices are merged.
+	 * @author Dawn Nye
+	 * @param <V> The type of data in the vertices.
+	 * @param <E> The type of data in the edges.
+	 */
 	@FunctionalInterface public interface VertexSelector<V,E>
 	{
 		/**
 		 * Selects which vertex data should survive when the vertices with IDs {@code id1} and {@code id2} are merged.
 		 * @param g The graph the merge is being performed in.
-		 * @param id1 The vertex 
-		 * @param id2
-		 * @return
+		 * @param id1 The first vertex ID to merge. This is the vertex that will survive the merge.
+		 * @param id2 The second vertex ID to merge. This is the vertex that will not survive the merge.
+		 * @return Returns the vertex data to place in the merged vertex. This can be either datum of the old vertices or a new combined datum.
 		 */
 		public V SelectVertexData(IGraph<V,E> g, int id1, int id2);
 	}
 	
 	/**
-	 * Encapsulates the esseence of a merge event for a graph when two vertices are being merged into a single vertex.
+	 * Encapsulates edge data selection when two edges are merged.
+	 * @author Dawn Nye
+	 * @param <V> The type of data in the vertices.
+	 * @param <E> The type of data in the edges.
+	 */
+	@FunctionalInterface public interface EdgeSelector<V,E>
+	{
+		/**
+		 * Selects which edge data should survive when the edges with (source,destination) IDs specified by {@code e1} and {@code e2} are merged.
+		 * @param g The graph the merge is being performed in.
+		 * @param e1
+		 * The first edge to merge.
+		 * This edge is between the vertex that will survive the merge and another vertex (potentially the vertex that will not survive the merge).
+		 * The {@code X} value specifies the source vertex ID and the {@code Y} value species the destination vertex ID.
+		 * @param e2
+		 * The second edge to merge.
+		 * This edge is between the vertex that will not survive the merge and another vertex (potentially the vertex that will survive the merge).
+		 * The {@code X} value specifies the source vertex ID and the {@code Y} value species the destination vertex ID.
+		 * @return Returns the edge data to place in the merged edge. This can be either datum of the old edges or a new combined datum.
+		 */
+		public E SelectEdgeData(IGraph<V,E> g, Vector2i e1, Vector2i e2);
+	}
+	
+	/**
+	 * Encapsulates the essence of a merge event for a graph when two vertices are being merged into a single vertex.
 	 * @author Dawn Nye
 	 * @param <V> The type of data in the vertices.
 	 * @param <E> The type of data in the edges.
@@ -316,6 +381,7 @@ public class SpeculativeGraph<V,E> extends AdjacencyMatrixGraph<V,E> implements 
 		/**
 		 * The ID of the second vertex being merged.
 		 * This is always the vertex ID that will not survive the merging process (and is the larger of the two IDs).
+		 * This value will always be invalid after the merge has been performed.
 		 */
 		public final int Alias;
 		
