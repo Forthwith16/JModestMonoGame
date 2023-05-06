@@ -30,7 +30,7 @@ public class SpeculativeGraph<V,E> extends AdjacencyMatrixGraph<V,E> implements 
 	 * @param inspector The means by which common vertices are identified between graphs.
 	 * @throws NullPointerException Thrown if {@code inspector} is null.
 	 */
-	public SpeculativeGraph(boolean dir,GraphAnalyzer<V,E> inspector)
+	public SpeculativeGraph(boolean dir, GraphAnalyzer<V,E> inspector)
 	{
 		super(dir);
 		
@@ -119,13 +119,16 @@ public class SpeculativeGraph<V,E> extends AdjacencyMatrixGraph<V,E> implements 
 	protected void TryMerge(int id1, int id2)
 	{
 		// Find the initial merge (if we have one at all)
-		Vector2i p = Inspector.FindCommonVertex(this,id1,id2);
+		Vector2i p = Inspector.FindCommonVertex(this,id1,id2,0);
+		
+		// We will want to know what merge we're on
+		int merge = 0;
 		
 		// If we're given two vertices to merge and they're valid, do it
 		while(p != null)
 		{
 			// We'll need to verify if what we got was correct
-			MergeEvent<V,E> e = new MergeEvent<V,E>(this,p.X,p.Y,false);
+			MergeEvent<V,E> e = new MergeEvent<V,E>(this,p.X,p.Y,false,++merge);
 			
 			// If this merge event is invalid, then we can't merge
 			if(!e.IsValid())
@@ -153,11 +156,11 @@ public class SpeculativeGraph<V,E> extends AdjacencyMatrixGraph<V,E> implements 
 			id2 = -1; // This is always -1 since we can only merge vertex IDs now, never modify the edge set
 			
 			// Now that we've merged, we'll notify our observers of that fact
-			e = new MergeEvent<V,E>(this,id1,id2,true);
+			e = new MergeEvent<V,E>(this,id1,id2,true,merge);
 			NotifyAll(e);
 			
 			// Now check to see if we have anything else we need to merge
-			p = Inspector.FindCommonVertex(this,id1,id2);
+			p = Inspector.FindCommonVertex(this,id1,id2,merge);
 		}
 		
 		return;
@@ -210,6 +213,7 @@ public class SpeculativeGraph<V,E> extends AdjacencyMatrixGraph<V,E> implements 
 		 * @param g The graph to search in for a common vertex within.
 		 * @param id1 If this value is not -1 (an always invalid vertex ID), then this is the vertex ID of a vertex that was added/modified/merged or the source vertex of an added/removed/modified edge if {@code id2} is not -1.
 		 * @param id2 If this value is not -1 (an always invalid vertex ID), then this is the vertex ID of the destination vertex of an added/removed/modified edge.
+		 * @param merge_num This is the number of merges already performed since the last graph operation.
 		 * @return
 		 * Returns a pair of vertex IDs.
 		 * These vertex IDs should correspond to a single vertex which two unconnected components of {@code g} have in common.
@@ -217,7 +221,7 @@ public class SpeculativeGraph<V,E> extends AdjacencyMatrixGraph<V,E> implements 
 		 * If there is no such vertex, null is returned instead.
 		 * @implNote Note that {@code id1} and {@code id2} will both be -1 only when a vertex is removed.
 		 */
-		public Vector2i FindCommonVertex(IGraph<V,E> g, int id1, int id2);
+		public Vector2i FindCommonVertex(IGraph<V,E> g, int id1, int id2, int merge_num);
 	}
 	
 	/**
@@ -233,9 +237,10 @@ public class SpeculativeGraph<V,E> extends AdjacencyMatrixGraph<V,E> implements 
 		 * @param id The ID of the vertex surviving the merging process (this must be the smaller ID).
 		 * @param alias The ID of the vertex not surviving the merging process (this must be the larger ID).
 		 * @param merged If true, then the vertices have already been merged. If false, then they have not been merged yet.
+		 * @param merge_num The merge number.
 		 * @throws NullPointerException Thrown if {@code g} is null.
 		 */
-		public MergeEvent(IGraph<V,E> g, int id, int alias, boolean merged)
+		public MergeEvent(IGraph<V,E> g, int id, int alias, boolean merged, int merge_num)
 		{
 			if(g == null)
 				throw new NullPointerException();
@@ -245,6 +250,8 @@ public class SpeculativeGraph<V,E> extends AdjacencyMatrixGraph<V,E> implements 
 			Alias = alias;
 			
 			Merged = merged;
+			MergeNumber = merge_num;
+			
 			return;
 		}
 		
@@ -285,6 +292,12 @@ public class SpeculativeGraph<V,E> extends AdjacencyMatrixGraph<V,E> implements 
 		 * This is always the vertex ID that will not survive the merging process (and is the larger of the two IDs).
 		 */
 		public final int Alias;
+		
+		/**
+		 * After a graph operation, multiple merges may be performed.
+		 * This event represents the {@code MergeNumber}th merge.
+		 */
+		public final int MergeNumber;
 		
 		/**
 		 * If true, then the vertices have been merged.
