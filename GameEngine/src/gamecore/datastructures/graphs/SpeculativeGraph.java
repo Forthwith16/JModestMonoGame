@@ -60,7 +60,7 @@ public class SpeculativeGraph<V,E> extends AdjacencyMatrixGraph<V,E> implements 
 		int ret = super.AddVertex(vertex);
 		
 		if(ret > -1)
-			TryMerge(ret,-1);
+			ret = TryMerge(ret,-1);
 		
 		return ret;
 	}
@@ -126,13 +126,17 @@ public class SpeculativeGraph<V,E> extends AdjacencyMatrixGraph<V,E> implements 
 	 * Tries to merge unconnected components of the graph together.
 	 * @param id1 If this value is not -1 (an always invalid vertex ID), then this is the vertex ID of a vertex that was added/modified/merged or the source vertex of an added/removed/modified edge if {@code id2} is not -1.
 	 * @param id2 If this value is not -1 (an always invalid vertex ID), then this is the vertex ID of the destination vertex of an added/removed/modified edge.
+	 * @return Returns the resulting vertex ID of {@code id1} if that vertex is merged into another vertex or {@code id1} if no change occurred.
 	 * @implNote Note that {@code id1} and {@code id2} will both be -1 only when a vertex is removed.
 	 */
-	protected void TryMerge(int id1, int id2)
+	protected int TryMerge(int id1, int id2)
 	{
+		// Keep track of what id1 becomes
+		int ret = id1;
+		
 		// If we're already merging, don't start up another merge
 		if(MergeInProgress)
-			return;
+			return ret;
 		
 		MergeInProgress = true;
 		
@@ -154,6 +158,10 @@ public class SpeculativeGraph<V,E> extends AdjacencyMatrixGraph<V,E> implements 
 			
 			// Notify all observers
 			NotifyAll(e);
+			
+			// Update our return value if necessary
+			if(p.Y == ret)
+				ret = p.X; // We keep the smaller vertex ID
 			
 			// Update the vertex data first, as it's probably independnet of the edge data
 			SetVertex(p.X,VSelect.SelectVertexData(this,p.X,p.Y));
@@ -197,7 +205,7 @@ public class SpeculativeGraph<V,E> extends AdjacencyMatrixGraph<V,E> implements 
 		}
 		
 		MergeInProgress = false;
-		return;
+		return ret;
 	}
 	
 	public void Subscribe(IObserver<MergeEvent<V,E>> eye)
