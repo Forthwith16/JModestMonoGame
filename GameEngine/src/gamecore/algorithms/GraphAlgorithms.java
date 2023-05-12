@@ -12,6 +12,7 @@ import gamecore.datastructures.graphs.exceptions.NoSuchVertexException;
 import gamecore.datastructures.graphs.exceptions.UnconnectedGraphException;
 import gamecore.datastructures.maps.Dictionary;
 import gamecore.datastructures.queues.PriorityQueue;
+import gamecore.datastructures.queues.PriorityQueueTree;
 import gamecore.datastructures.queues.Queue;
 import gamecore.datastructures.queues.Stack;
 import gamecore.datastructures.tuples.Pair;
@@ -513,7 +514,7 @@ public final class GraphAlgorithms
 		
 		// The priority queue sorts based on distance
 		// We will keep only unvisited vertices in here along with their tentative weights
-		PriorityQueue<Pair<Integer,E>> Q = new PriorityQueue<Pair<Integer,E>>((p1,p2) -> cmp.compare(p1.Item2,p2.Item2));
+		PriorityQueueTree<Pair<Integer,E>> Q = new PriorityQueueTree<Pair<Integer,E>>((p1,p2) -> cmp.compare(p1.Item2,p2.Item2));
 		
 		// Add all of the tentative paths out of the start vertex
 		for(Integer n : G.Neighbors(start))
