@@ -91,6 +91,14 @@ public class AnimatedComponent extends ImageComponent implements IUpdatable, IOb
 	 */
 	protected void SetSelectedImage(int index)
 	{
+		if(TheAnimation != null)
+		{
+			img = null;
+			SelectedIndex = -1;
+			
+			return;
+		}
+		
 		if(index >= 0 && index < TheAnimation.FrameCount())
 			img = TheAnimation.GetFrame(index);
 		else
@@ -107,7 +115,8 @@ public class AnimatedComponent extends ImageComponent implements IUpdatable, IOb
 	 */
 	public void SwapAnimations(Animation a)
 	{
-		TheAnimation.Unsubscribe(this);
+		if(TheAnimation != null)
+			TheAnimation.Unsubscribe(this);
 		
 		TheAnimation = a;
 		
@@ -126,7 +135,9 @@ public class AnimatedComponent extends ImageComponent implements IUpdatable, IOb
 	 */
 	public void Play()
 	{
-		TheAnimation.Play();
+		if(TheAnimation != null)
+			TheAnimation.Play();
+		
 		return;
 	}
 	
@@ -135,7 +146,9 @@ public class AnimatedComponent extends ImageComponent implements IUpdatable, IOb
 	 */
 	public void Pause()
 	{
-		TheAnimation.Pause();
+		if(TheAnimation != null)
+			TheAnimation.Pause();
+		
 		return;
 	}
 	
@@ -144,7 +157,9 @@ public class AnimatedComponent extends ImageComponent implements IUpdatable, IOb
 	 */
 	public void Stop()
 	{
-		TheAnimation.Stop();
+		if(TheAnimation != null)
+			TheAnimation.Stop();
+		
 		return;
 	}
 	
@@ -153,14 +168,24 @@ public class AnimatedComponent extends ImageComponent implements IUpdatable, IOb
 	 * @return Returns true if the animation is playing and false otherwise.
 	 */
 	public boolean IsPlaying()
-	{return TheAnimation.IsPlaying();}
+	{
+		if(TheAnimation == null)
+			return false;
+		
+		return TheAnimation.IsPlaying();
+	}
 	
 	/**
 	 * Determines if the animation is paused.
 	 * @return Returns true if the animation is paused and false otherwise.
 	 */
 	public boolean IsPaused()
-	{return TheAnimation.IsPaused();}
+	{
+		if(TheAnimation == null)
+			return false;
+		
+		return TheAnimation.IsPaused();
+	}
 	
 	/**
 	 * Sets the animation to the specified frame.
@@ -170,6 +195,9 @@ public class AnimatedComponent extends ImageComponent implements IUpdatable, IOb
 	 */
 	public void SetFrame(int frame)
 	{
+		if(TheAnimation == null)
+			return;
+		
 		TheAnimation.SetFrame(frame);
 		return;
 	}
@@ -179,19 +207,34 @@ public class AnimatedComponent extends ImageComponent implements IUpdatable, IOb
 	 * @return Returns the current frame of the animation.
 	 */
 	public int CurrentFrame()
-	{return TheAnimation.CurrentFrame();}
+	{
+		if(TheAnimation == null)
+			return 0;
+		
+		return TheAnimation.CurrentFrame();
+	}
 	
 	/**
 	 * The current time in the animation.
 	 */
 	public long CurrentTime()
-	{return TheAnimation.CurrentTime();}
+	{
+		if(TheAnimation == null)
+			return 0;
+		
+		return TheAnimation.CurrentTime();
+	}
 	
 	/**
 	 * The total elapsed time according to the time partition.
 	 */
 	public long ElapsedTime()
-	{return TheAnimation.ElapsedTime();}
+	{
+		if(TheAnimation == null)
+			return 0;
+		
+		return TheAnimation.ElapsedTime();
+	}
 	
 	/**
 	 * Determines the start time of frame {@code frame}.
@@ -200,7 +243,12 @@ public class AnimatedComponent extends ImageComponent implements IUpdatable, IOb
 	 * @throws IndexOutOfBoundsException Thrown if {@code frame} is negative or at least {@code FrameCount()}.
 	 */
 	public long FrameStart(int frame)
-	{return TheAnimation.FrameStart(frame);}
+	{
+		if(TheAnimation == null)
+			return 0;
+		
+		return TheAnimation.FrameStart(frame);
+	}
 	
 	/**
 	 * Determines the end time of frame {@code frame}.
@@ -209,7 +257,12 @@ public class AnimatedComponent extends ImageComponent implements IUpdatable, IOb
 	 * @throws IndexOutOfBoundsException Thrown if {@code frame} is negative or at least {@code FrameCount()}.
 	 */
 	public long FrameEnd(int frame)
-	{return FrameStart(frame) + GetFrameDuration(frame);}
+	{
+		if(TheAnimation == null)
+			return 0;
+		
+		return FrameStart(frame) + GetFrameDuration(frame);
+	}
 	
 	/**
 	 * Obtains the duraction of the specified frame.
@@ -218,21 +271,36 @@ public class AnimatedComponent extends ImageComponent implements IUpdatable, IOb
 	 * @throws IndexOutOfBoundsException Thrown if {@code frame} is negative or at least {@code FrameCount()}.
 	 */
 	public long GetFrameDuration(int frame)
-	{return TheAnimation.GetFrameDuration(frame);}
+	{
+		if(TheAnimation == null)
+			return 0;
+		
+		return TheAnimation.GetFrameDuration(frame);
+	}
 	
 	/**
 	 * Determines the number of frames in this animation.
 	 * @return Returns the number of frames in this animation.
 	 */
 	public int FrameCount()
-	{return TheAnimation.FrameCount();}
+	{
+		if(TheAnimation == null)
+			return 0;
+		
+		return TheAnimation.FrameCount();
+	}
 	
 	/**
 	 * Determines the length of the animation.
 	 * @return Returns the length of the animation.
 	 */
 	public long AnimationLength()
-	{return TheAnimation.AnimationLength();}
+	{
+		if(TheAnimation == null)
+			return 0;
+		
+		return TheAnimation.AnimationLength();
+	}
 	
 	/**
 	 * Causes the animation to loop with its last set loop start and end times.
@@ -240,6 +308,9 @@ public class AnimatedComponent extends ImageComponent implements IUpdatable, IOb
 	 */
 	public void Loop()
 	{
+		if(TheAnimation == null)
+			return;
+		
 		if(TheAnimation.Loops())
 			return;
 		
@@ -255,9 +326,12 @@ public class AnimatedComponent extends ImageComponent implements IUpdatable, IOb
 	 */
 	public void Loop(long start, long end)
 	{
+		if(TheAnimation == null)
+			return;
+		
 		if(start >= end || end > AnimationLength())
 			throw new IllegalArgumentException();
-		
+
 		TheAnimation.Loop(start,end);
 		return;
 	}
@@ -271,6 +345,9 @@ public class AnimatedComponent extends ImageComponent implements IUpdatable, IOb
 	 */
 	public void Loop(int start, int end)
 	{
+		if(TheAnimation == null)
+			return;
+		
 		if(start > end)
 			throw new IllegalArgumentException();
 		
@@ -286,6 +363,9 @@ public class AnimatedComponent extends ImageComponent implements IUpdatable, IOb
 	 */
 	public void StopLooping()
 	{
+		if(TheAnimation == null)
+			return;
+		
 		if(!TheAnimation.Loops())
 			return;
 		
@@ -298,7 +378,12 @@ public class AnimatedComponent extends ImageComponent implements IUpdatable, IOb
 	 * @return Returns true if the animation is looping and false otherwise.
 	 */
 	public boolean Loops()
-	{return TheAnimation.Loops();}
+	{
+		if(TheAnimation == null)
+			return false;
+		
+		return TheAnimation.Loops();
+	}
 	
 	/**
 	 * Determines when the time loop starts (if there is a time loop).
@@ -306,7 +391,12 @@ public class AnimatedComponent extends ImageComponent implements IUpdatable, IOb
 	 * @return Returns the start time of the time loop.
 	 */
 	public long LoopStart()
-	{return TheAnimation.LoopStart();}
+	{
+		if(TheAnimation == null)
+			return 0;
+		
+		return TheAnimation.LoopStart();
+	}
 	
 	/**
 	 * Determines when the time loop ends (if there is a time loop).
@@ -314,7 +404,12 @@ public class AnimatedComponent extends ImageComponent implements IUpdatable, IOb
 	 * @return Returns the end time of the time loop.
 	 */
 	public long LoopEnd()
-	{return TheAnimation.LoopEnd();}
+	{
+		if(TheAnimation == null)
+			return 0;
+		
+		return TheAnimation.LoopEnd();
+	}
 	
 	/**
 	 * Determines the length of the animation.
@@ -322,7 +417,12 @@ public class AnimatedComponent extends ImageComponent implements IUpdatable, IOb
 	 * @return Returns the length of the animation.
 	 */
 	public long LoopLength()
-	{return TheAnimation.LoopLength();}
+	{
+		if(TheAnimation == null)
+			return 0;
+		
+		return TheAnimation.LoopLength();
+	}
 	
 	/**
 	 * The animation to draw.
