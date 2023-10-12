@@ -91,7 +91,7 @@ public class AnimatedComponent extends ImageComponent implements IUpdatable, IOb
 	 */
 	protected void SetSelectedImage(int index)
 	{
-		if(TheAnimation != null)
+		if(TheAnimation == null)
 		{
 			img = null;
 			SelectedIndex = -1;
