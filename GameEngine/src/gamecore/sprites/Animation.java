@@ -212,6 +212,8 @@ public class Animation implements IUpdatable, IObservable<TimeEvent>
 		
 		fin.close();
 		
+		PlaybackSpeed = 1.0f;
+		
 		Initialized = false;
 		Disposed = false;
 		
@@ -233,6 +235,8 @@ public class Animation implements IUpdatable, IObservable<TimeEvent>
 		Clock = new TimePartition(LINQ.Select(frames,(next,prev) -> prev == null ? next.Item2 : next.Item2 + prev));
 		Clock.MaximumTime(true,Clock.GetSegment(Clock.SegmentCount() - 1)); // The maximum time is inclusive, so this is technically 1 ms longer than it should be, but for the sake of (exclusive) loop ends, this is fine
 		Clock.RemoveSegment(Clock.SegmentCount() - 1); // The last segment is the (exclusive) end time of the final frame, and we don't want there to be a segment transition there 
+		
+		PlaybackSpeed = 1.0f;
 		
 		Initialized = false;
 		Disposed = false;
@@ -263,6 +267,8 @@ public class Animation implements IUpdatable, IObservable<TimeEvent>
 		Clock.MaximumTime(true,Clock.GetSegment(Clock.SegmentCount() - 1)); // The maximum time is inclusive, so this is technically 1 ms longer than it should be, but for the sake of (exclusive) loop ends, this is fine
 		Clock.RemoveSegment(Clock.SegmentCount() - 1); // The last segment is the (exclusive) end time of the final frame, and we don't want there to be a segment transition there 
 		
+		PlaybackSpeed = 1.0f;
+		
 		Initialized = false;
 		Disposed = false;
 		
@@ -288,6 +294,8 @@ public class Animation implements IUpdatable, IObservable<TimeEvent>
 		
 		if(loop)
 			Loop(0,FrameCount() - 1);
+		
+		PlaybackSpeed = 1.0f;
 		
 		Initialized = false;
 		Disposed = false;
@@ -322,6 +330,8 @@ public class Animation implements IUpdatable, IObservable<TimeEvent>
 		if(loop)
 			Loop(0,FrameCount() - 1);
 		
+		PlaybackSpeed = 1.0f;
+		
 		Initialized = false;
 		Disposed = false;
 		
@@ -343,6 +353,8 @@ public class Animation implements IUpdatable, IObservable<TimeEvent>
 		Frames = new ArrayList<Pair<Integer,Long>>(a.Frames);
 		
 		Clock = new TimePartition(a.Clock);
+		
+		PlaybackSpeed = 1.0f;
 		
 		Initialized = false;
 		Disposed = false;
@@ -369,7 +381,7 @@ public class Animation implements IUpdatable, IObservable<TimeEvent>
 		if(!Initialized() || Disposed())
 			return;
 		
-		Clock.Update(delta);
+		Clock.Update((long)(delta * PlaybackSpeed));
 		return;
 	}
 	
@@ -419,6 +431,19 @@ public class Animation implements IUpdatable, IObservable<TimeEvent>
 	}
 	
 	/**
+	 * Sets the playback speed of the animation.
+	 * @param s The time multiplier. This value must be positive.
+	 */
+	public void SetPlaybackSpeed(float s)
+	{
+		if(s <= 0.0f)
+			return;
+		
+		PlaybackSpeed = s;
+		return;
+	}
+	
+	/**
 	 * Causes the animation to pause.
 	 */
 	public void Pause()
@@ -442,6 +467,12 @@ public class Animation implements IUpdatable, IObservable<TimeEvent>
 	 */
 	public boolean IsPlaying()
 	{return Clock.Playing();}
+	
+	/**
+	 * Gets the current playback speed.
+	 */
+	public float GetPlaybackSpeed()
+	{return PlaybackSpeed;}
 	
 	/**
 	 * Determines if the animation is paused.
@@ -647,6 +678,12 @@ public class Animation implements IUpdatable, IObservable<TimeEvent>
 	 * The animation clock.
 	 */
 	protected TimePartition Clock;
+	
+	/**
+	 * The playback speed of the animation.
+	 * This value must be positive.
+	 */
+	protected float PlaybackSpeed;
 	
 	/**
 	 * The images we can display.
