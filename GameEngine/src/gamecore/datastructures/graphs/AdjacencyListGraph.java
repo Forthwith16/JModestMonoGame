@@ -8,6 +8,7 @@ import gamecore.LINQ.LINQ;
 import gamecore.datastructures.LinkedList;
 import gamecore.datastructures.graphs.exceptions.NoSuchEdgeException;
 import gamecore.datastructures.graphs.exceptions.NoSuchVertexException;
+import gamecore.datastructures.maps.Dictionary;
 import gamecore.datastructures.queues.Stack;
 import gamecore.datastructures.vectors.Vector2i;
 
@@ -27,6 +28,8 @@ public class AdjacencyListGraph<V,E> implements IGraph<V,E>
 	public AdjacencyListGraph(boolean dir)
 	{
 		Vertices = new ArrayList<LVertex<V,E>>();
+		VertexTable = new Dictionary<V,LinkedList<Integer>>();
+		
 		Directed = dir;
 		
 		AvailableIDs = new Stack<Integer>();
@@ -53,6 +56,16 @@ public class AdjacencyListGraph<V,E> implements IGraph<V,E>
 		else
 			Vertices.set(ID,new LVertex<V,E>(ID,vertex));
 		
+		// Update the reverse lookup table
+		LinkedList<Integer> l;
+		
+		if(!VertexTable.ContainsKey(vertex))
+			VertexTable.Add(vertex,l = new LinkedList<Integer>());
+		else
+			l = VertexTable.Get(vertex);
+		
+		l.add(ID);
+		
 		return ID;
 	}
 	
@@ -63,6 +76,19 @@ public class AdjacencyListGraph<V,E> implements IGraph<V,E>
 		V ret = Vertices.get(vertex).Data;
 		Vertices.get(vertex).Data = data;
 		
+		// Update the reverse lookup table
+		LinkedList<Integer> l = VertexTable.Get(ret);
+		l.remove(vertex);
+		
+		if(l.IsEmpty())
+			VertexTable.RemoveByKey(ret);
+		
+		if(!VertexTable.ContainsKey(data))
+			VertexTable.Add(data,l = new LinkedList<Integer>());
+		else
+			l = VertexTable.Get(data);
+		
+		l.add(vertex);
 		return ret;
 	}
 	
@@ -72,12 +98,28 @@ public class AdjacencyListGraph<V,E> implements IGraph<V,E>
 		return Vertices.get(vertex).Data;
 	}
 	
+	public int GetVertexID(V data)
+	{
+		if(VertexTable.ContainsKey(data))
+			return VertexTable.Get(data).get(0);
+		
+		return -1; 
+	}
+	
 	public boolean RemoveVertex(int vertex)
 	{
 		if(!ContainsVertex(vertex))
 			return false;
 		
+		// Mark the ID available
 		AvailableIDs.Push(vertex);
+		
+		// Remove the ID from the reverse lookup table
+		LinkedList<Integer> l = VertexTable.Get(Vertices.get(vertex).Data);
+		l.remove(vertex);
+		
+		if(l.IsEmpty())
+			VertexTable.RemoveByKey(Vertices.get(vertex).Data);
 		
 		// We decrease the edge count by the number of outgoing edges and the number of incoming edges
 		ECount -= Vertices.get(vertex).OutEdges.size();
@@ -339,6 +381,7 @@ public class AdjacencyListGraph<V,E> implements IGraph<V,E>
 	public void Clear()
 	{
 		Vertices = new ArrayList<LVertex<V,E>>();
+		VertexTable = new Dictionary<V,LinkedList<Integer>>();
 		
 		AvailableIDs = new Stack<Integer>();
 		AvailableIDs.Push(0); // We need to keep the next available new ID at the bottom of the stack at all times
@@ -450,6 +493,12 @@ public class AdjacencyListGraph<V,E> implements IGraph<V,E>
 	 * The vertices of the graph.
 	 */
 	protected ArrayList<LVertex<V,E>> Vertices;
+	
+	/**
+	 * The reverse lookup table for vertex data to IDs.
+	 * The list contains every vertex with the specified data.
+	 */
+	protected Dictionary<V,LinkedList<Integer>> VertexTable;
 	
 	/**
 	 * The number of vertices in the graph.

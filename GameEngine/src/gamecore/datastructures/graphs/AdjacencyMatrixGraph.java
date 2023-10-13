@@ -1,6 +1,7 @@
 package gamecore.datastructures.graphs;
 
 import gamecore.LINQ.LINQ;
+import gamecore.datastructures.LinkedList;
 import gamecore.datastructures.graphs.exceptions.NoSuchEdgeException;
 import gamecore.datastructures.graphs.exceptions.NoSuchVertexException;
 import gamecore.datastructures.grids.VariableSizeGrid;
@@ -23,6 +24,7 @@ public class AdjacencyMatrixGraph<V,E> implements IGraph<V,E>
 	public AdjacencyMatrixGraph(boolean dir)
 	{
 		Vertices = new Dictionary<Integer,Vertex<V>>();
+		VertexTable = new Dictionary<V,LinkedList<Integer>>();
 		Edges = new VariableSizeGrid<Edge<V,E>>();
 		Directed = dir;
 		
@@ -48,6 +50,16 @@ public class AdjacencyMatrixGraph<V,E> implements IGraph<V,E>
 		else
 			Vertices.Put(ID,new Vertex<V>(ID,vertex));
 		
+		// Update the reverse lookup table
+		LinkedList<Integer> l;
+		
+		if(!VertexTable.ContainsKey(vertex))
+			VertexTable.Add(vertex,l = new LinkedList<Integer>());
+		else
+			l = VertexTable.Get(vertex);
+		
+		l.add(ID);
+		
 		return ID;
 	}
 	
@@ -58,6 +70,19 @@ public class AdjacencyMatrixGraph<V,E> implements IGraph<V,E>
 		V ret = Vertices.Get(vertex).Data;
 		Vertices.Get(vertex).Data = data;
 		
+		// Update the reverse lookup table
+		LinkedList<Integer> l = VertexTable.Get(ret);
+		l.remove(vertex);
+		
+		if(l.IsEmpty())
+			VertexTable.RemoveByKey(ret);
+		
+		if(!VertexTable.ContainsKey(data))
+			VertexTable.Add(data,l = new LinkedList<Integer>());
+		else
+			l = VertexTable.Get(data);
+		
+		l.add(vertex);
 		return ret;
 	}
 	
@@ -67,12 +92,27 @@ public class AdjacencyMatrixGraph<V,E> implements IGraph<V,E>
 		return Vertices.Get(vertex).Data;
 	}
 	
+	public int GetVertexID(V data)
+	{
+		if(VertexTable.ContainsKey(data))
+			return VertexTable.Get(data).get(0);
+		
+		return -1; 
+	}
+	
 	public boolean RemoveVertex(int vertex)
 	{
 		if(!ContainsVertex(vertex))
 			return false;
 		
 		AvailableIDs.Push(vertex);
+		
+		// Remove the ID from the reverse lookup table
+		LinkedList<Integer> l = VertexTable.Get(Vertices.Get(vertex).Data);
+		l.remove(vertex);
+		
+		if(l.IsEmpty())
+			VertexTable.RemoveByKey(Vertices.Get(vertex).Data);
 		
 		// We need to remove all of the edges by iterating over all the possible edges
 		for(Integer ID : VertexIDs())
@@ -379,6 +419,12 @@ public class AdjacencyMatrixGraph<V,E> implements IGraph<V,E>
 	 * The set of vertices in the graph.
 	 */
 	protected Dictionary<Integer,Vertex<V>> Vertices;
+	
+	/**
+	 * The reverse lookup table for vertex data to IDs.
+	 * The list contains every vertex with the specified data.
+	 */
+	protected Dictionary<V,LinkedList<Integer>> VertexTable;
 	
 	/**
 	 * The edge set in the graph.

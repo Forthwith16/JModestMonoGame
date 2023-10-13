@@ -1,4 +1,4 @@
-package gamecore.algorithms;
+package csc301.f23.pa2;
 
 import java.util.Comparator;
 
@@ -919,7 +919,7 @@ public final class GraphAlgorithms
 		DFS(mst,(g,g_me,search,s_me,forward) ->
 		{
 			if(forward)
-				tour.AddLast(g_me);
+				tour.AddLast(G.GetVertexID(g.GetVertex(g_me)));
 			
 			return;
 		});

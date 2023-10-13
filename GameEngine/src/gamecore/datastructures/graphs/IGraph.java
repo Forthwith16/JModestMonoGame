@@ -45,6 +45,14 @@ public interface IGraph<V,E>
 	public V GetVertex(int vertex);
 	
 	/**
+	 * Obtains a vertex ID from the vertex data.
+	 * @param data The vertex data to reverse lookup.
+	 * @return Returns the (first) vertex with {@code data} in it or -1 if no such vertex exists.
+	 * @implNote Vertex data is not compared with address values, so if multiple vertices have equal data, this can correctly return multiple different values.
+	 */
+	public int GetVertexID(V data);
+	
+	/**
 	 * Remove the vertex with ID {@code vertex}.
 	 * This also removes any edges for which the vertex is an endpoint.
 	 * @param vertex The ID of the vertex to remove.
