@@ -1,4 +1,4 @@
-package csc301.f23.pa2;
+package gamecore.algorithms;
 
 import java.util.Comparator;
 
@@ -593,7 +593,7 @@ public final class GraphAlgorithms
 			ret.AddFront(cur);
 			cur = paths.Get(cur).Item2;
 		}
-		while(paths.Get(cur).Item2 != -1); // This is the start vertex
+		while(cur != -1);
 		
 		return ret;
 	}
