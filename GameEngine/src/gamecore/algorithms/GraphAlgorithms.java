@@ -575,6 +575,30 @@ public final class GraphAlgorithms
 	}
 	
 	/**
+	 * Constructs the shortest path to {@code end} out of the result of a Dijkstra's run.
+	 * @param <V> The type of data in the vertices.
+	 * @param <E> The type of data in the edges.
+	 * @param paths The result of runing Dijkstra's on some vertex and calculating the shortest path to every other vertex.
+	 * @param end The destination vertex ID.
+	 * @return Returns a minimum length path to {@code end} in whatever graph it came from or null if there is no such path.
+	 */
+	public static <V,E> Iterable<Integer> DijkstraConstructPath(Dictionary<Integer,Pair<E,Integer>> paths, int end)
+	{
+		LinkedList<Integer> ret = new LinkedList<Integer>();
+		
+		int cur = end;
+		
+		do
+		{
+			ret.AddFront(cur);
+			cur = paths.Get(cur).Item2;
+		}
+		while(paths.Get(cur).Item2 != -1); // This is the start vertex
+		
+		return ret;
+	}
+	
+	/**
 	 * Finds a minimum length path from {@code start} to {@code end} in an unweighted graph {@code G}.
 	 * @param <V> The type of data in the vertices.
 	 * @param <E> The type of data in the edges.
@@ -693,8 +717,7 @@ public final class GraphAlgorithms
 	 * @param cmp The means by which we compare {@code E} types.
 	 * @return Returns a minimum spanning tree of {@code G}.
 	 * @throws NullPointerException Thrown if {@code G} or {@code cmp} is null.
-	 * @throws IllegalArgumentException Thrown if {@code start} is negative or if {@code G} is directed.
-	 * @throws NoSuchVertexException Thrown if {@code start} is not a vertex ID in the graph.
+	 * @throws IllegalArgumentException Thrown if {@code G} is directed.
 	 * @throws UnconnectedGraphException Thrown if {@code G} is an unconnected graph.
 	 */
 	public static <V,E> IGraph<V,E> Prim(IGraph<V,E> G, Comparator<? super E> cmp)
@@ -866,6 +889,45 @@ public final class GraphAlgorithms
 		});
 		
 		return ret;
+	}
+	
+	/**
+	 * Creates a 2-approximate optimal tour of {@code G}.
+	 * @param <V> The vertex data type.
+	 * @param <E> The edge data type.
+	 * @param G The graph to tour. This graph must be connected, undirected, and obey the triangle inequality to guarantee that this algorithm works.
+	 * @param cmp The means by which edge data is compared.
+	 * @return
+	 * Returns a tour of {@code G} that is within a factor of two of the optimal tour.
+	 * The tour returns a list of the vertices visited in {@code G} in the order visited.
+	 * Each vertex will appear exactly once except for the initial vertex, which will appear twice.
+	 * @throws IllegalArgumentException Thrown if {@code G} does not contain at least two vertices or is directed.
+	 * @throws NullPointerException Thrown if {@code G}, {@code cmp}, or {@code sum} is null.
+	 * @throws UnconnectedGraphException Thrown if G is an unconnected graph.
+	 */
+	public static <V,E> Iterable<Integer> Tour(IGraph<V,E> G, Comparator<? super E> cmp)
+	{
+		if(G.IsDirected() || G.VertexCount() < 2)
+			throw new IllegalArgumentException();
+		
+		// Create a minimum spanning tree of G
+		IGraph<V,E> mst = Prim(G,cmp);
+		
+		// Perform a DFS of mst and record the order we visit them
+		LinkedList<Integer> tour = new LinkedList<Integer>();
+		
+		DFS(mst,(g,g_me,search,s_me,forward) ->
+		{
+			if(forward)
+				tour.AddLast(g_me);
+			
+			return;
+		});
+		
+		// Make our hamiltonian path into a hamiltonian cycle
+		tour.AddLast(tour.Front());
+		
+		return tour;
 	}
 	
 	/**
